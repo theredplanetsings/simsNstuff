@@ -1,6 +1,6 @@
 # simsNstuff
 
-## 3D Mineral Deposit Modeling Program
+## 3D Mineral Deposit Modelling Programme
 
 Streamlit webapp visualises random 3D deposits of silver, gold, iron, copper, and coal. You can:
 - Select which minerals to display
@@ -30,4 +30,14 @@ C:/Users/[userprofilehere]/AppData/Local/miniconda3/Scripts/streamlit.exe run mi
 ### Features
 - Interactive 3D visualisation (Plotly)
 - Sidebar controls for mineral selection and deposit count
-- Color-coded minerals
+- Colour-coded minerals
+
+### Modelling Modes
+The app now supports four different 3D mineral deposit modelling styles. Use the sidebar to select one:
+
+- **Gaussian blobs:** Each mineral forms a cluster in 3D space (default, similar to previous version).
+- **Veins:** Simulates mineral veins as random walks in 3D.
+- **Layers:** Deposits are distributed in a planar or ellipsoidal layer.
+- **Voxel grid:** Deposits fill a 3D grid, visualising high-density regions.
+
+Switch between these modes to explore different geological scenarios for each mineral type.
