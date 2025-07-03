@@ -1,5 +1,4 @@
 # simsNstuff
-
 ## 3D Mineral Deposit Modelling Programme
 
 Streamlit webapp visualises random 3D deposits of silver, gold, iron, copper, and coal. You can:
