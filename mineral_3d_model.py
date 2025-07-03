@@ -2,6 +2,9 @@
 3D Mineral Deposit Modeling Program
 
 3d Visualisation of random deposits of silver, gold, iron, copper, and coal w/ matplotlib.
+
+__author__ = "https://github.com/theredplanetsings"
+__date__ = "01/7/2025"
 """
 import numpy as np
 import streamlit as st
