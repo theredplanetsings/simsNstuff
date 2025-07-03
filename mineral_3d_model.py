@@ -27,13 +27,57 @@ selected_minerals = [m for m in minerals if st.sidebar.checkbox(m, value=True)]
 n_deposits = st.sidebar.slider('Number of deposits per mineral', 10, 500, 100, 10)
 random_seed = st.sidebar.number_input('Random seed', value=42, step=1)
 
-# random 3D coordinates for each mineral
+# modeling mode selection
+modeling_mode = st.sidebar.selectbox(
+    'Modeling mode',
+    ['Gaussian blobs', 'Veins', 'Layers', 'Voxel grid']
+)
+
+# random 3D coordinates for each mineral, depending on modeling mode
 deposits = {}
 np.random.seed(random_seed)
+
 for mineral in minerals:
-    # every deposit is a cluster in a different region
-    center = np.random.uniform(-50, 50, size=3)
-    coords = np.random.normal(loc=center, scale=10, size=(n_deposits, 3))
+    if modeling_mode == 'Gaussian blobs':
+        # each deposit is a 3D Gaussian blob
+        center = np.random.uniform(-50, 50, size=3)
+        coords = np.random.normal(loc=center, scale=10, size=(n_deposits, 3))
+    elif modeling_mode == 'Veins':
+        # simulate a vein as a random walk in 3D
+        start = np.random.uniform(-50, 50, size=3)
+        steps = np.random.normal(loc=0, scale=3, size=(n_deposits, 3))
+        coords = np.cumsum(np.vstack([start, steps]), axis=0)[:n_deposits]
+    elif modeling_mode == 'Layers':
+        # deposits in a planar/ellipsoidal layer
+        center = np.random.uniform(-50, 50, size=3)
+        # random points in a plane with some thickness
+        theta = np.random.uniform(0, 2*np.pi, n_deposits)
+        r = np.random.normal(20, 5, n_deposits)
+        x = center[0] + r * np.cos(theta)
+        y = center[1] + r * np.sin(theta)
+        z = center[2] + np.random.normal(0, 2, n_deposits)  # thin layer
+        coords = np.column_stack([x, y, z])
+    elif modeling_mode == 'Voxel grid':
+        # fill a 3D grid and sample high-density region
+        grid_size = 30
+        grid = np.zeros((grid_size, grid_size, grid_size))
+        # create a blob in the grid
+        cx, cy, cz = np.random.randint(10, 20, size=3)
+        for _ in range(n_deposits * 2):
+            x = int(np.clip(np.random.normal(cx, 4), 0, grid_size-1))
+            y = int(np.clip(np.random.normal(cy, 4), 0, grid_size-1))
+            z = int(np.clip(np.random.normal(cz, 4), 0, grid_size-1))
+            grid[x, y, z] += 1
+        # sample points from high-density voxels
+        xs, ys, zs = np.where(grid > 0)
+        idx = np.random.choice(len(xs), size=min(n_deposits, len(xs)), replace=False)
+        coords = np.column_stack([
+            xs[idx] * 3 - 45,
+            ys[idx] * 3 - 45,
+            zs[idx] * 3 - 45
+        ])
+    else:
+        coords = np.zeros((n_deposits, 3))
     deposits[mineral] = coords
 
 # prepares our plotly 3d scatter plot
