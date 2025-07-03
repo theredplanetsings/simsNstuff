@@ -27,8 +27,8 @@ selected_minerals = [m for m in minerals if st.sidebar.checkbox(m, value=True)]
 n_deposits = st.sidebar.slider('Number of deposits per mineral', 10, 500, 100, 10)
 random_seed = st.sidebar.number_input('Random seed', value=42, step=1)
 
-# modeling mode selection
-modeling_mode = st.sidebar.selectbox(
+# modeling mode selection (now using radio for click-only)
+modeling_mode = st.sidebar.radio(
     'Modeling mode',
     ['Gaussian blobs', 'Veins', 'Layers', 'Voxel grid']
 )
