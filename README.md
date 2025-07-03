@@ -22,7 +22,7 @@ From your project directory, run:
 ```
 streamlit run mineral_3d_model.py
 ```
-Or, if `streamlit` is not in your PATH, use the full path to your Miniconda Scripts folder:
+If `streamlit` is not in your PATH, use the full path to your Miniconda Scripts folder:
 ```
 C:/Users/[userprofilehere]/AppData/Local/miniconda3/Scripts/streamlit.exe run mineral_3d_model.py
 ```
