@@ -3,7 +3,7 @@
 
 A Streamlit webapp to visualise random 3D deposits of silver, gold, iron, copper, and coal. 
 
-**Live App:** https://simsnstuff.streamlit.app/
+**Live Site:** https://simsnstuff.streamlit.app/
 
 You can:
 - Select which minerals to display (sidebar checkboxes)
