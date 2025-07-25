@@ -1,26 +1,26 @@
 # simsNstuff
-## 3D Mineral Deposit Modelling Programme
+## 3D Geological Deposit Modelling Programme
 
-A Streamlit webapp to visualise random 3D deposits of silver, gold, iron, copper, and coal. 
+A Streamlit webapp to visualise realistic 3D deposits of minerals and petroleum using advanced geological modelling.
 
-**Live Site:** https://simsnstuff.streamlit.app/
+**Live Demo:** https://simsnstuff.streamlit.app/
 
-You can:
-- Select which minerals to display (sidebar checkboxes)
-- Adjust the number of deposits per mineral (sidebar slider)
-- Change the random seed for reproducibility (sidebar number input)
-- Choose the deposit modelling mode (sidebar radio buttons, click-only)
-- Interact with the 3D model in your browser (Plotly)
+### What You Can Do:
+- **Mineral Deposits:** Model silver, gold, iron, copper, and coal using realistic geological formations
+- **Petroleum Deposits:** Simulate oil, natural gas, oil shale, and gas hydrates in sedimentary basins
+- Switch between deposit types using radio button selection
+- Adjust geological parameters for realistic modelling
+- Interact with 3D models in your browser (Plotly)
 
 *Note: This app uses British English spelling throughout.*
 
 ### Requirements
 - Python 3.8+
-- Packages: numpy, streamlit, plotly
+- Packages: numpy, streamlit, plotly, scipy
 
 Install requirements (if needed):
 ```
-pip install numpy streamlit plotly
+pip install numpy streamlit plotly scipy
 ```
 
 ### Running the App Locally
@@ -37,17 +37,34 @@ C:/Users/[userprofilehere]/AppData/Local/miniconda3/Scripts/streamlit.exe run mi
 The app is deployed on Streamlit Cloud and requires a `requirements.txt` file containing the necessary dependencies.
 
 ### Features
-- Interactive 3D visualisation (Plotly)
-- Sidebar controls for mineral selection, deposit count, random seed, and modelling mode
-- Colour-coded minerals
-- Click-only radio buttons for modelling mode selection
+- **Dual Mode Interface:** Switch between mineral and petroleum deposit modelling
+- **Interactive 3D Visualisation:** Plotly-powered 3D scatter plots with hover information
+- **Conditional Sidebar Controls:** Only relevant parameters show based on selected deposit type
+- **Realistic Geological Modelling:** Based on actual geological principles and formations
+- **Colour-coded Deposits:** Easy identification of different mineral and petroleum types
+- **Click-only Controls:** Radio buttons prevent accidental text input
 
-### Modelling Modes
-The app supports four different 3D mineral deposit modelling styles. Use the sidebar to select one:
+### Mineral Deposit Modelling Modes
+Advanced geological modelling styles for mineral deposits:
 
-- **Gaussian blobs:** Each mineral forms a cluster in 3D space (default, similar to previous version).
-- **Veins:** Simulates mineral veins as random walks in 3D.
-- **Layers:** Deposits are distributed in a planar or ellipsoidal layer.
-- **Voxel grid:** Deposits fill a 3D grid, visualising high-density regions.
+- **Orebody Systems:** Pipe-like or lode deposits formed by hydrothermal processes, often associated with igneous intrusions
+- **Hydrothermal Veins:** Fracture-filling deposits with branching patterns, common for precious metals
+- **Sedimentary Layers:** Stratiform deposits in sedimentary rocks, typical for coal and iron formations
+- **Contact Metamorphic:** Deposits formed in aureoles around igneous intrusions through thermal metamorphism
+- **Placer Deposits:** Concentration of heavy minerals in alluvial sediments, common for gold and gemstones
 
-Switch between these modes to explore different geological scenarios for each mineral type.
+### Petroleum Deposit Features
+Realistic petroleum system modelling includes:
+
+- **Oil:** Structural high accumulations in anticlines and fault traps
+- **Natural Gas:** Higher migration patterns with gas cap formations
+- **Oil Shale:** Source rock distributions in deeper sedimentary basins
+- **Gas Hydrates:** Shallow marine and permafrost deposit formations
+
+### Geological Parameters
+- **Depth Influence:** Controls how depth affects deposit density and distribution
+- **Structural Complexity:** Influences fracturing, trap formation, and geological complexity
+- **Basin Size:** Controls petroleum basin dimensions and reservoir distribution
+- **Trap Efficiency:** Affects hydrocarbon concentration and migration patterns
+
+Switch between different modes to explore various geological scenarios for each deposit type.

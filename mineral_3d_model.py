@@ -34,11 +34,11 @@ st.markdown('Visualise realistic 3D deposits of minerals and petroleum using adv
 # Use radio buttons to select deposit type instead of tabs
 deposit_type = st.radio(
     "Select deposit type:",
-    ["🪨 Mineral Deposits", "🛢️ Petroleum Deposits"],
+    ["Mineral Deposits", "Petroleum Deposits"],
     horizontal=True
 )
 
-if deposit_type == "🪨 Mineral Deposits":
+if deposit_type == "Mineral Deposits":
     st.header("Mineral Deposit Modelling")
     
     # mineral selection
