@@ -31,42 +31,38 @@ petroleum = {
 st.title('3D Geological Deposit Modelling Programme')
 st.markdown('Visualise realistic 3D deposits of minerals and petroleum using advanced geological modelling.')
 
-# Create tabs for different deposit types
-tab1, tab2 = st.tabs(["🪨 Mineral Deposits", "🛢️ Petroleum Deposits"])
+# Use radio buttons to select deposit type instead of tabs
+deposit_type = st.radio(
+    "Select deposit type:",
+    ["🪨 Mineral Deposits", "🛢️ Petroleum Deposits"],
+    horizontal=True
+)
 
-# Initialize session state to track active tab
-if 'active_tab' not in st.session_state:
-    st.session_state.active_tab = 'minerals'
-
-with tab1:
-    st.session_state.active_tab = 'minerals'
+if deposit_type == "🪨 Mineral Deposits":
     st.header("Mineral Deposit Modelling")
     
-    # Only show mineral controls when on mineral tab
-    if st.session_state.active_tab == 'minerals':
-        # mineral selection
-        st.sidebar.markdown('**Select minerals to display:**')
-        selected_minerals = [m for m in minerals if st.sidebar.checkbox(m, value=True)]
+    # mineral selection
+    st.sidebar.markdown('**Select minerals to display:**')
+    selected_minerals = [m for m in minerals if st.sidebar.checkbox(m, value=True)]
 
-        # Only show mineral controls if minerals are selected
-        if selected_minerals:
-            st.sidebar.markdown('**Mineral Parameters:**')
-            n_deposits = st.sidebar.slider('Number of deposits per mineral', 10, 500, 100, 10)
-            random_seed = st.sidebar.number_input('Random seed', value=42, step=1)
+    # Only show mineral controls if minerals are selected
+    if selected_minerals:
+        st.sidebar.markdown('**Mineral Parameters:**')
+        n_deposits = st.sidebar.slider('Number of deposits per mineral', 10, 500, 100, 10)
+        random_seed = st.sidebar.number_input('Random seed', value=42, step=1)
 
-            # enhanced modeling mode selection
-            modeling_mode = st.sidebar.radio(
-                'Geological modelling mode',
-                ['Orebody systems', 'Hydrothermal veins', 'Sedimentary layers', 'Contact metamorphic', 'Placer deposits']
-            )
-            
-            # geological parameters
-            st.sidebar.markdown('**Geological Parameters:**')
-            depth_factor = st.sidebar.slider('Depth influence', 0.1, 2.0, 1.0, 0.1)
-            structural_complexity = st.sidebar.slider('Structural complexity', 1, 5, 3, 1)
-        else:
-            st.warning("Please select at least one mineral to display the model.")
-            selected_minerals = []
+        # enhanced modeling mode selection
+        modeling_mode = st.sidebar.radio(
+            'Geological modelling mode',
+            ['Orebody systems', 'Hydrothermal veins', 'Sedimentary layers', 'Contact metamorphic', 'Placer deposits']
+        )
+        
+        # geological parameters
+        st.sidebar.markdown('**Geological Parameters:**')
+        depth_factor = st.sidebar.slider('Depth influence', 0.1, 2.0, 1.0, 0.1)
+        structural_complexity = st.sidebar.slider('Structural complexity', 1, 5, 3, 1)
+    else:
+        st.warning("Please select at least one mineral to display the model.")
 
     def generate_realistic_deposits(mineral, mode, n_deposits, seed, depth_factor, complexity):
         """Generate geologically realistic mineral deposits"""
@@ -258,28 +254,23 @@ with tab1:
         elif modeling_mode == 'Placer deposits':
             st.info("**Placer Deposits:** Concentration of heavy minerals in alluvial sediments. Common for gold and gemstones.")
 
-with tab2:
-    st.session_state.active_tab = 'petroleum'
+else:  # Petroleum Deposits
     st.header("Petroleum Deposit Modelling")
     
-    # Only show petroleum controls when on petroleum tab
-    if st.session_state.active_tab == 'petroleum':
-        # petroleum selection
-        st.sidebar.markdown('**Select petroleum deposits to display:**')
-        selected_petroleum = [p for p in petroleum if st.sidebar.checkbox(p, value=True, key=f"pet_{p}")]
-        
-        # Only show petroleum controls if deposits are selected
-        if selected_petroleum:
-            # petroleum controls
-            st.sidebar.markdown('**Petroleum Parameters:**')
-            basin_size = st.sidebar.slider('Basin size (km)', 20, 100, 50, 10)
-            reservoir_count = st.sidebar.slider('Number of reservoirs', 1, 8, 3, 1)
-            trap_efficiency = st.sidebar.slider('Trap efficiency', 0.1, 1.0, 0.6, 0.1)
-            pet_random_seed = st.sidebar.number_input('Random seed', value=42, step=1, key="pet_seed")
-        else:
-            st.warning("Please select at least one petroleum deposit type to display the model.")
-            selected_petroleum = []
+    # petroleum selection
+    st.sidebar.markdown('**Select petroleum deposits to display:**')
+    selected_petroleum = [p for p in petroleum if st.sidebar.checkbox(p, value=True, key=f"pet_{p}")]
     
+    # Only show petroleum controls if deposits are selected
+    if selected_petroleum:
+        # petroleum controls
+        st.sidebar.markdown('**Petroleum Parameters:**')
+        basin_size = st.sidebar.slider('Basin size (km)', 20, 100, 50, 10)
+        reservoir_count = st.sidebar.slider('Number of reservoirs', 1, 8, 3, 1)
+        trap_efficiency = st.sidebar.slider('Trap efficiency', 0.1, 1.0, 0.6, 0.1)
+        pet_random_seed = st.sidebar.number_input('Random seed', value=42, step=1, key="pet_seed")
+    else:
+        st.warning("Please select at least one petroleum deposit type to display the model.")
     def generate_petroleum_deposits(deposit_type, basin_size, reservoir_count, trap_efficiency, seed):
         """Generate realistic petroleum deposits"""
         np.random.seed(seed + hash(deposit_type) % 1000)
