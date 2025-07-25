@@ -34,9 +34,6 @@ st.markdown('Visualise realistic 3D deposits of minerals and petroleum using adv
 # Create tabs for different deposit types
 tab1, tab2 = st.tabs(["🪨 Mineral Deposits", "🛢️ Petroleum Deposits"])
 
-# Create tabs for different deposit types
-tab1, tab2 = st.tabs(["🪨 Mineral Deposits", "🛢️ Petroleum Deposits"])
-
 with tab1:
     st.header("Mineral Deposit Modelling")
     
