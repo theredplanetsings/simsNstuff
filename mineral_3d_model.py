@@ -28,7 +28,7 @@ petroleum = {
     'Gas Hydrates': 'lightcyan'
 }
 
-st.title('3D Geological Deposit Modelling Programme')
+st.title('Sims N Stuff')
 st.markdown('Visualise realistic 3D deposits of minerals and petroleum using advanced geological modelling.')
 
 # Use radio buttons to select deposit type instead of tabs
