@@ -1,7 +1,7 @@
 """
 Sims N Stuff -
 
-3D Geological Deposit Modelling Programme
+A 3D Geological Deposit Modelling Programme
 
 3D Visualisation of realistic mineral and petroleum deposits using advanced geological modelling.
 
