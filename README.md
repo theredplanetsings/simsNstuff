@@ -68,3 +68,7 @@ Realistic petroleum system modelling includes:
 - **Trap Efficiency:** Affects hydrocarbon concentration and migration patterns
 
 Switch between different modes to explore various geological scenarios for each deposit type.
+
+## Licence
+
+Creative Commons Zero v1.0 Universal (CC0) - Public domain dedication for maximum freedom
