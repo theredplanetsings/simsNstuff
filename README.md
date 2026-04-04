@@ -14,8 +14,6 @@ A Streamlit webapp to visualise realistic 3D deposits of minerals and petroleum 
 - Adjust geological parameters for realistic modelling
 - Interact with 3D models in your browser (Plotly)
 
-*Note: This app uses British English spelling throughout.*
-
 ### Requirements
 - Python 3.8+
 - Packages: numpy, streamlit, plotly, scipy
