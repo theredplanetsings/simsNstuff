@@ -4,6 +4,7 @@ from app_views import render_mineral_view, render_petroleum_view, render_real_da
 
 st.title("Sims N Stuff")
 st.markdown("Visualise realistic 3D deposits of minerals and petroleum using advanced geological modelling.")
+st.caption("Pick a view above, then use the sidebar to adjust only the controls that apply to that mode.")
 
 render_sidebar_intro()
 
@@ -11,6 +12,7 @@ deposit_type = st.radio(
     "Select view:",
     ["Mineral Deposits", "Petroleum Deposits", "Real Data"],
     horizontal=False,
+    help="Switch between synthetic geology and the real-data overlays.",
 )
 
 if deposit_type == "Real Data":
