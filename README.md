@@ -52,6 +52,7 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 - **Export Ready:** Download generated mineral and petroleum point clouds as CSV files
 
 ## Updates
+- Split the Streamlit UI into reusable view modules for easier maintenance.
 - Deterministic generation with stable seeds and local RNG usage.
 - Faster rendering by generating only selected deposit types.
 - Refactored generation code into reusable modules with unit tests.
