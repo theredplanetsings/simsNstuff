@@ -43,7 +43,7 @@ python -m streamlit run mineral_3d_model.py
 The app is deployed on Streamlit Cloud and requires a `requirements.txt` file containing the necessary dependencies.
 
 ### Features
-- **Dual Mode Interface:** Switch between mineral and petroleum deposit modelling
+- **Multi-View Interface:** Switch between mineral, petroleum, and real-data views
 - **Interactive 3D Visualisation:** Plotly-powered 3D scatter plots with hover information
 - **Conditional Sidebar Controls:** Only relevant parameters show based on selected deposit type
 - **Realistic Geological Modelling:** Based on actual geological principles and formations
@@ -52,16 +52,14 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 - **Export Ready:** Download generated mineral and petroleum point clouds as CSV files
 
 ## Updates
-- **2026-04-03 (Section 1):** Added deterministic seed derivation so the same input seed now produces reproducible results across runs and environments.
-- **2026-04-03 (Section 2):** Switched generation logic to local `numpy.random.default_rng(...)` instances so modelling no longer mutates global RNG state.
-- **2026-04-03 (Section 3):** Optimised performance by generating coordinates only for selected minerals and petroleum deposit types.
-- **2026-04-03 (Section 4):** Refactored geological generation logic into `generators.py` to improve maintainability and enable isolated testing.
-- **2026-04-03 (Section 5):** Added baseline unit tests for deterministic output and core shape contracts in geological generators.
-- **2026-04-03 (Section 6):** Added repository cleanup and consistency updates: `.gitignore`, cross-platform run notes, dependency version bounds, and UI wording alignment.
-- **2026-04-03 (Section 7):** Added UX upgrades: CSV download buttons, assumptions/units explainers, and improved high-contrast marker styling.
-- **2026-04-03 (Option A):** Integrated real-world U.S. commodity production data from EIA (Energy Information Administration): coal, crude oil, and natural gas production trends (2020-2024) displayed as interactive time-series charts. Created `real_data.py` module for data fetching and formatting.
-- **2026-04-03 (Option B):** Added USGS mineral statistics integration with a dedicated `usgs_data.py` module and a Real Data source switch for EIA energy trends vs USGS commodity snapshots.
-- **2026-04-03 (Option C):** Added user CSV upload support for custom mine/well coordinates with strict column validation (`x`, `y`, `z`, optional `label`) and interactive 3D overlay plotting.
+- Deterministic generation with stable seeds and local RNG usage.
+- Faster rendering by generating only selected deposit types.
+- Refactored generation code into reusable modules with unit tests.
+- Improved docs and project hygiene (`requirements.txt` bounds and `.gitignore` cleanup).
+- Added CSV exports and clearer model assumptions in the UI.
+- Added Real Data mode with EIA energy production trends.
+- Added USGS mineral statistics snapshot view.
+- Added CSV upload + validation for custom mine/well 3D overlays.
 
 ### Running Tests
 From the project root, run:
