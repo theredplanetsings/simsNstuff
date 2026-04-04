@@ -76,18 +76,18 @@ if deposit_type == "Mineral Deposits":
 
     def generate_realistic_deposits(mineral, mode, n_deposits, seed, depth_factor, complexity):
         """Generate geologically realistic mineral deposits"""
-        np.random.seed(derive_stable_seed(seed, mineral))
+        rng = np.random.default_rng(derive_stable_seed(seed, mineral))
         
         if mode == 'Orebody systems':
             # Create pipe-like or lode-like orebodies
-            center = np.random.uniform(-30, 30, size=3)
+            center = rng.uniform(-30, 30, size=3)
             # Elongated body with preferred orientation
-            strike = np.random.uniform(0, 2*np.pi)
-            dip = np.random.uniform(np.pi/6, np.pi/2)
+            strike = rng.uniform(0, 2*np.pi)
+            dip = rng.uniform(np.pi/6, np.pi/2)
             
             # Generate points along the orebody axis
-            length = np.random.uniform(20, 40)
-            t = np.random.uniform(0, length, n_deposits)
+            length = rng.uniform(20, 40)
+            t = rng.uniform(0, length, n_deposits)
             
             # Main axis direction
             axis = np.array([np.cos(strike), np.sin(strike), -np.sin(dip)])
@@ -96,7 +96,7 @@ if deposit_type == "Mineral Deposits":
             for i, pos in enumerate(t):
                 base_pos = center + pos * axis
                 # Add scatter perpendicular to main axis
-                scatter = np.random.normal(0, 3 + pos*0.1, 3)
+                scatter = rng.normal(0, 3 + pos*0.1, 3)
                 scatter = scatter - np.dot(scatter, axis) * axis  # Remove component along axis
                 coords.append(base_pos + scatter)
             
@@ -104,7 +104,7 @@ if deposit_type == "Mineral Deposits":
             
         elif mode == 'Hydrothermal veins':
             # Create branching vein systems
-            start = np.random.uniform(-40, 40, size=3)
+            start = rng.uniform(-40, 40, size=3)
             coords = [start]
             
             current_pos = start.copy()
@@ -112,38 +112,38 @@ if deposit_type == "Mineral Deposits":
             
             for i in range(n_deposits - 1):
                 # Main vein direction with some variation
-                direction = np.random.normal([0.5, 0.3, -0.2], 0.3)
+                direction = rng.normal([0.5, 0.3, -0.2], 0.3)
                 direction = direction / np.linalg.norm(direction)
                 
-                step_size = np.random.uniform(1, 4)
+                step_size = rng.uniform(1, 4)
                 current_pos = current_pos + direction * step_size
                 coords.append(current_pos.copy())
                 
                 # Occasional branching
-                if np.random.random() < 0.1 and len(branch_points) < complexity:
+                if rng.random() < 0.1 and len(branch_points) < complexity:
                     branch_points.append(current_pos.copy())
             
             # Add branch veins
             for branch_start in branch_points:
-                branch_length = np.random.randint(5, 15)
+                branch_length = rng.integers(5, 15)
                 branch_pos = branch_start.copy()
                 for _ in range(branch_length):
                     if len(coords) >= n_deposits:
                         break
-                    direction = np.random.normal([0, 0, -0.5], 0.4)
+                    direction = rng.normal([0, 0, -0.5], 0.4)
                     direction = direction / np.linalg.norm(direction)
-                    branch_pos = branch_pos + direction * np.random.uniform(1, 3)
+                    branch_pos = branch_pos + direction * rng.uniform(1, 3)
                     coords.append(branch_pos.copy())
             
             coords = np.array(coords[:n_deposits])
             
         elif mode == 'Sedimentary layers':
             # Create stratified deposits
-            n_layers = np.random.randint(2, complexity + 1)
+            n_layers = rng.integers(2, complexity + 1)
             coords = []
             
             for layer in range(n_layers):
-                layer_center = np.random.uniform(-40, 40, size=3)
+                layer_center = rng.uniform(-40, 40, size=3)
                 layer_center[2] = -20 - layer * 10  # Deeper layers
                 
                 points_in_layer = n_deposits // n_layers
@@ -152,25 +152,25 @@ if deposit_type == "Mineral Deposits":
                 
                 # Create elliptical layer
                 for _ in range(points_in_layer):
-                    theta = np.random.uniform(0, 2*np.pi)
-                    r = np.random.exponential(15)
+                    theta = rng.uniform(0, 2*np.pi)
+                    r = rng.exponential(15)
                     x = layer_center[0] + r * np.cos(theta)
                     y = layer_center[1] + r * np.sin(theta)
-                    z = layer_center[2] + np.random.normal(0, 2)
+                    z = layer_center[2] + rng.normal(0, 2)
                     coords.append([x, y, z])
             
             coords = np.array(coords)
             
         elif mode == 'Contact metamorphic':
             # Create aureole around igneous intrusion
-            intrusion_center = np.random.uniform(-20, 20, size=3)
+            intrusion_center = rng.uniform(-20, 20, size=3)
             coords = []
             
             for _ in range(n_deposits):
                 # Distance from intrusion affects probability
-                distance = np.random.exponential(8)
-                theta = np.random.uniform(0, 2*np.pi)
-                phi = np.random.uniform(0, np.pi)
+                distance = rng.exponential(8)
+                theta = rng.uniform(0, 2*np.pi)
+                phi = rng.uniform(0, np.pi)
                 
                 x = intrusion_center[0] + distance * np.sin(phi) * np.cos(theta)
                 y = intrusion_center[1] + distance * np.sin(phi) * np.sin(theta)
@@ -183,24 +183,24 @@ if deposit_type == "Mineral Deposits":
         elif mode == 'Placer deposits':
             # Create alluvial/stream deposits
             # Simulate valley/stream bed
-            valley_direction = np.random.uniform(0, 2*np.pi)
+            valley_direction = rng.uniform(0, 2*np.pi)
             valley_axis = np.array([np.cos(valley_direction), np.sin(valley_direction), 0])
             
             coords = []
-            stream_center = np.random.uniform(-30, 30, size=3)
+            stream_center = rng.uniform(-30, 30, size=3)
             stream_center[2] = 0  # Near surface
             
             for i in range(n_deposits):
                 # Follow valley direction
-                distance_along = np.random.normal(0, 20)
-                distance_across = np.random.exponential(5)
-                if np.random.random() < 0.5:
+                distance_along = rng.normal(0, 20)
+                distance_across = rng.exponential(5)
+                if rng.random() < 0.5:
                     distance_across *= -1
                 
                 pos = stream_center + distance_along * valley_axis
                 pos[0] += distance_across * valley_axis[1]  # Perpendicular
                 pos[1] -= distance_across * valley_axis[0]
-                pos[2] += np.random.exponential(2)  # Slightly buried
+                pos[2] += rng.exponential(2)  # Slightly buried
                 
                 coords.append(pos)
             
@@ -214,7 +214,6 @@ if deposit_type == "Mineral Deposits":
     # Generate deposits using enhanced models
     if selected_minerals:
         deposits = {}
-        np.random.seed(random_seed)
         
         for mineral in minerals:
             deposits[mineral] = generate_realistic_deposits(
@@ -283,36 +282,36 @@ else:  # Petroleum Deposits
         st.warning("Please select at least one petroleum deposit type to display the model.")
     def generate_petroleum_deposits(deposit_type, basin_size, reservoir_count, trap_efficiency, seed):
         """Generate realistic petroleum deposits"""
-        np.random.seed(derive_stable_seed(seed, deposit_type))
+        rng = np.random.default_rng(derive_stable_seed(seed, deposit_type))
         
         reservoirs = []
         
         for reservoir_id in range(reservoir_count):
             # Create sedimentary basin structure
-            basin_center = np.random.uniform(-basin_size/2, basin_size/2, size=2)
+            basin_center = rng.uniform(-basin_size/2, basin_size/2, size=2)
             
             if deposit_type == 'Oil':
                 # Oil tends to be in structural highs
-                depth_base = np.random.uniform(-3000, -1500)
-                thickness = np.random.uniform(50, 200)
+                depth_base = rng.uniform(-3000, -1500)
+                thickness = rng.uniform(50, 200)
                 
             elif deposit_type == 'Natural Gas':
                 # Gas migrates higher, often caps oil
-                depth_base = np.random.uniform(-2500, -800)
-                thickness = np.random.uniform(30, 150)
+                depth_base = rng.uniform(-2500, -800)
+                thickness = rng.uniform(30, 150)
                 
             elif deposit_type == 'Oil Shale':
                 # Source rock, typically deeper and more extensive
-                depth_base = np.random.uniform(-4000, -2000)
-                thickness = np.random.uniform(100, 500)
+                depth_base = rng.uniform(-4000, -2000)
+                thickness = rng.uniform(100, 500)
                 
             elif deposit_type == 'Gas Hydrates':
                 # Shallow marine or permafrost
-                depth_base = np.random.uniform(-1000, -200)
-                thickness = np.random.uniform(20, 100)
+                depth_base = rng.uniform(-1000, -200)
+                thickness = rng.uniform(20, 100)
             
             # Create anticline or fault trap structure
-            trap_type = np.random.choice(['anticline', 'fault_trap', 'stratigraphic'])
+            trap_type = rng.choice(['anticline', 'fault_trap', 'stratigraphic'])
             
             if trap_type == 'anticline':
                 # Dome-shaped structure
@@ -321,15 +320,15 @@ else:  # Petroleum Deposits
                 
                 for _ in range(n_points):
                     # Distance from crest
-                    r = np.random.exponential(basin_size / 8)
-                    theta = np.random.uniform(0, 2*np.pi)
+                    r = rng.exponential(basin_size / 8)
+                    theta = rng.uniform(0, 2*np.pi)
                     
                     x = basin_center[0] + r * np.cos(theta)
                     y = basin_center[1] + r * np.sin(theta)
                     
                     # Anticlinal structure - higher at center
                     elevation_factor = np.exp(-r / (basin_size / 6))
-                    z = depth_base + thickness * elevation_factor + np.random.normal(0, thickness/10)
+                    z = depth_base + thickness * elevation_factor + rng.normal(0, thickness/10)
                     
                     coords.append([x, y, z])
                     
@@ -339,19 +338,19 @@ else:  # Petroleum Deposits
                 coords = []
                 
                 # Fault orientation
-                fault_strike = np.random.uniform(0, 2*np.pi)
+                fault_strike = rng.uniform(0, 2*np.pi)
                 fault_normal = np.array([-np.sin(fault_strike), np.cos(fault_strike)])
                 
                 for _ in range(n_points):
                     # Points on upthrown side of fault
-                    distance_from_fault = np.random.exponential(basin_size / 10)
-                    along_fault = np.random.uniform(-basin_size/4, basin_size/4)
+                    distance_from_fault = rng.exponential(basin_size / 10)
+                    along_fault = rng.uniform(-basin_size/4, basin_size/4)
                     
                     pos = basin_center + distance_from_fault * fault_normal
                     pos += along_fault * np.array([np.cos(fault_strike), np.sin(fault_strike)])
                     
                     x, y = pos
-                    z = depth_base + np.random.uniform(0, thickness)
+                    z = depth_base + rng.uniform(0, thickness)
                     
                     coords.append([x, y, z])
                     
@@ -361,9 +360,9 @@ else:  # Petroleum Deposits
                 coords = []
                 
                 for _ in range(n_points):
-                    x = basin_center[0] + np.random.normal(0, basin_size/6)
-                    y = basin_center[1] + np.random.normal(0, basin_size/6)
-                    z = depth_base + np.random.uniform(0, thickness)
+                    x = basin_center[0] + rng.normal(0, basin_size/6)
+                    y = basin_center[1] + rng.normal(0, basin_size/6)
+                    z = depth_base + rng.uniform(0, thickness)
                     
                     coords.append([x, y, z])
             
