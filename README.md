@@ -48,6 +48,13 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 - **2026-04-03 (Section 2):** Switched generation logic to local `numpy.random.default_rng(...)` instances so modelling no longer mutates global RNG state.
 - **2026-04-03 (Section 3):** Optimised performance by generating coordinates only for selected minerals and petroleum deposit types.
 - **2026-04-03 (Section 4):** Refactored geological generation logic into `generators.py` to improve maintainability and enable isolated testing.
+- **2026-04-03 (Section 5):** Added baseline unit tests for deterministic output and core shape contracts in geological generators.
+
+### Running Tests
+From the project root, run:
+```
+python -m unittest discover -s tests -p "test_*.py"
+```
 
 ### Mineral Deposit Modelling Modes
 Advanced geological modelling styles for mineral deposits:
