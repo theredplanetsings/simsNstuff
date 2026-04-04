@@ -181,6 +181,6 @@ else:
 st.markdown("---")
 st.markdown("**Instructions:**")
 st.markdown("1. Use the sidebar to select deposit types and adjust geological parameters.")
-st.markdown("2. Switch between mineral and petroleum deposit tabs.")
+st.markdown("2. Switch between mineral and petroleum deposit types using the radio buttons.")
 st.markdown("3. Explore different geological modelling modes for realistic deposit patterns.")
 st.code("streamlit run mineral_3d_model.py", language="bash")

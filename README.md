@@ -19,7 +19,7 @@ A Streamlit webapp to visualise realistic 3D deposits of minerals and petroleum 
 
 Install requirements (if needed):
 ```
-pip install numpy streamlit plotly scipy
+pip install -r requirements.txt
 ```
 
 ### Running the App Locally
@@ -30,6 +30,10 @@ streamlit run mineral_3d_model.py
 If `streamlit` is not in your PATH, use the full path to your Miniconda Scripts folder:
 ```
 C:/Users/[userprofilehere]/AppData/Local/miniconda3/Scripts/streamlit.exe run mineral_3d_model.py
+```
+On macOS/Linux, you can also run:
+```
+python -m streamlit run mineral_3d_model.py
 ```
 
 ### Deployment
@@ -49,6 +53,7 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 - **2026-04-03 (Section 3):** Optimised performance by generating coordinates only for selected minerals and petroleum deposit types.
 - **2026-04-03 (Section 4):** Refactored geological generation logic into `generators.py` to improve maintainability and enable isolated testing.
 - **2026-04-03 (Section 5):** Added baseline unit tests for deterministic output and core shape contracts in geological generators.
+- **2026-04-03 (Section 6):** Added repository cleanup and consistency updates: `.gitignore`, cross-platform run notes, dependency version bounds, and UI wording alignment.
 
 ### Running Tests
 From the project root, run:
