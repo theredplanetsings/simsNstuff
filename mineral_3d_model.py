@@ -14,6 +14,7 @@ import io
 import streamlit as st
 import plotly.graph_objects as go
 
+from csv_overlay import parse_uploaded_points
 from generators import generate_petroleum_deposits, generate_realistic_deposits
 from real_data import format_production_summary, get_sample_production_data
 from usgs_data import format_usgs_summary, get_sample_usgs_mineral_data
@@ -350,6 +351,65 @@ elif deposit_type == "Real Data":
             - Official data portal: https://www.usgs.gov/centers/national-minerals-information-center
             """
         )
+
+    st.markdown("### Upload Your Own Mine/Well Coordinates")
+    uploaded_file = st.file_uploader(
+        "Upload CSV with columns: x, y, z, label (optional)",
+        type=["csv"],
+        key="uploaded_real_points",
+    )
+
+    if uploaded_file is not None:
+        try:
+            grouped_points = parse_uploaded_points(uploaded_file.getvalue())
+
+            fig_uploaded = go.Figure()
+            palette = [
+                "#e76f51",
+                "#2a9d8f",
+                "#264653",
+                "#f4a261",
+                "#457b9d",
+                "#8ab17d",
+            ]
+
+            for idx, (label, points) in enumerate(grouped_points.items()):
+                xs = [pt[0] for pt in points]
+                ys = [pt[1] for pt in points]
+                zs = [pt[2] for pt in points]
+                fig_uploaded.add_trace(
+                    go.Scatter3d(
+                        x=xs,
+                        y=ys,
+                        z=zs,
+                        mode="markers",
+                        marker=dict(
+                            size=7,
+                            color=palette[idx % len(palette)],
+                            opacity=0.85,
+                            line=dict(color="white", width=1),
+                        ),
+                        name=label,
+                        hovertemplate=f"<b>{label}</b><br>X: %{{x:.2f}}<br>Y: %{{y:.2f}}<br>Z: %{{z:.2f}}<extra></extra>",
+                    )
+                )
+
+            fig_uploaded.update_layout(
+                title="Uploaded Mine/Well Coordinates (3D)",
+                scene=dict(
+                    xaxis_title="X",
+                    yaxis_title="Y",
+                    zaxis_title="Z",
+                    camera=dict(eye=dict(x=1.4, y=1.4, z=1.1)),
+                ),
+                template="plotly_dark",
+                height=560,
+            )
+
+            st.success(f"Loaded {sum(len(v) for v in grouped_points.values())} points across {len(grouped_points)} label group(s).")
+            st.plotly_chart(fig_uploaded, use_container_width=True)
+        except ValueError as exc:
+            st.error(f"CSV validation error: {exc}")
 
 st.markdown("---")
 st.markdown("**Instructions:**")
