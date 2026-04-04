@@ -9,6 +9,7 @@ A Streamlit webapp to visualise realistic 3D deposits of minerals and petroleum 
 - **Petroleum Deposits:** Simulate oil, natural gas, oil shale, and gas hydrates in sedimentary basins
 - **Real Data:** Visualise U.S. commodity production trends from official EIA sources (coal, crude oil, natural gas)
 - **USGS Mineral Statistics:** View selected commodity snapshots for gold, silver, iron, copper, and coal
+- **CSV Upload Overlay:** Upload your own mine or well coordinates and visualise them in 3D
 - Switch between deposit types using radio button selection
 - Adjust geological parameters for realistic modelling
 - Interact with 3D models in your browser (Plotly)
@@ -60,6 +61,7 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 - **2026-04-03 (Section 7):** Added UX upgrades: CSV download buttons, assumptions/units explainers, and improved high-contrast marker styling.
 - **2026-04-03 (Option A):** Integrated real-world U.S. commodity production data from EIA (Energy Information Administration): coal, crude oil, and natural gas production trends (2020-2024) displayed as interactive time-series charts. Created `real_data.py` module for data fetching and formatting.
 - **2026-04-03 (Option B):** Added USGS mineral statistics integration with a dedicated `usgs_data.py` module and a Real Data source switch for EIA energy trends vs USGS commodity snapshots.
+- **2026-04-03 (Option C):** Added user CSV upload support for custom mine/well coordinates with strict column validation (`x`, `y`, `z`, optional `label`) and interactive 3D overlay plotting.
 
 ### Running Tests
 From the project root, run:
