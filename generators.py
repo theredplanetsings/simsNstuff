@@ -9,8 +9,55 @@ def derive_stable_seed(base_seed, label):
     return int.from_bytes(digest, "little")
 
 
+def _validate_non_negative_int(value, name):
+    if not isinstance(value, (int, np.integer)):
+        raise TypeError(f"{name} must be an integer.")
+    if value < 0:
+        raise ValueError(f"{name} must be greater than or equal to 0.")
+
+
+def _validate_positive_int(value, name):
+    _validate_non_negative_int(value, name)
+    if value == 0:
+        raise ValueError(f"{name} must be greater than 0.")
+
+
+def _validate_depth_factor(depth_factor):
+    if not np.isfinite(depth_factor):
+        raise ValueError("depth_factor must be finite.")
+    if depth_factor <= 0:
+        raise ValueError("depth_factor must be greater than 0.")
+
+
+def _validate_trap_efficiency(trap_efficiency):
+    if not np.isfinite(trap_efficiency):
+        raise ValueError("trap_efficiency must be finite.")
+    if trap_efficiency < 0 or trap_efficiency > 1:
+        raise ValueError("trap_efficiency must be between 0 and 1.")
+
+
+def _empty_coords():
+    return np.zeros((0, 3))
+
+
 def generate_realistic_deposits(mineral, mode, n_deposits, seed, depth_factor, complexity):
     """Generate geologically realistic mineral deposits."""
+    _validate_non_negative_int(n_deposits, "n_deposits")
+    _validate_positive_int(complexity, "complexity")
+    _validate_depth_factor(depth_factor)
+
+    if n_deposits == 0:
+        return _empty_coords()
+
+    if mode not in {
+        "Orebody systems",
+        "Hydrothermal veins",
+        "Sedimentary layers",
+        "Contact metamorphic",
+        "Placer deposits",
+    }:
+        raise ValueError(f"Unsupported mineral mode: {mode}")
+
     rng = np.random.default_rng(derive_stable_seed(seed, mineral))
 
     if mode == "Orebody systems":
@@ -131,6 +178,16 @@ def generate_realistic_deposits(mineral, mode, n_deposits, seed, depth_factor, c
 
 def generate_petroleum_deposits(deposit_type, basin_size, reservoir_count, trap_efficiency, seed):
     """Generate realistic petroleum deposits."""
+    _validate_positive_int(basin_size, "basin_size")
+    _validate_non_negative_int(reservoir_count, "reservoir_count")
+    _validate_trap_efficiency(trap_efficiency)
+
+    if reservoir_count == 0 or trap_efficiency == 0:
+        return _empty_coords()
+
+    if deposit_type not in {"Oil", "Natural Gas", "Oil Shale", "Gas Hydrates"}:
+        raise ValueError(f"Unsupported petroleum deposit type: {deposit_type}")
+
     rng = np.random.default_rng(derive_stable_seed(seed, deposit_type))
 
     reservoirs = []
@@ -201,4 +258,4 @@ def generate_petroleum_deposits(deposit_type, basin_size, reservoir_count, trap_
 
         reservoirs.extend(coords)
 
-    return np.array(reservoirs) if reservoirs else np.zeros((0, 3))
+    return np.array(reservoirs) if reservoirs else _empty_coords()
