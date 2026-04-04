@@ -39,8 +39,14 @@ def build_points_csv(points_by_label, unit_label):
     return output.getvalue()
 
 
+def render_view_header(title, subtitle):
+    st.header(title)
+    st.caption(subtitle)
+
+
 def render_sidebar_intro():
     st.sidebar.markdown("### Available Features")
+    st.sidebar.caption("Pick a view, then use only the controls that apply to that scenario.")
     st.sidebar.markdown("- Mineral deposit modelling")
     st.sidebar.markdown("- Petroleum deposit modelling")
     st.sidebar.markdown("- Real Data: EIA energy trends")
@@ -49,9 +55,13 @@ def render_sidebar_intro():
 
 
 def render_mineral_view():
-    st.header("Mineral Deposit Modelling")
+    render_view_header(
+        "Mineral Deposit Modelling",
+        "Explore different synthetic orebody styles, then tune density and structure from the sidebar.",
+    )
 
     st.sidebar.markdown("**Select minerals to display:**")
+    st.sidebar.caption("All selected minerals share the same geological mode and random seed.")
     selected_minerals = [m for m in MINERALS if st.sidebar.checkbox(m, value=True)]
 
     if not selected_minerals:
@@ -59,8 +69,20 @@ def render_mineral_view():
         return
 
     st.sidebar.markdown("**Mineral Parameters:**")
-    n_deposits = st.sidebar.slider("Number of deposits per mineral", 10, 500, 100, 10)
-    random_seed = st.sidebar.number_input("Random seed", value=42, step=1)
+    n_deposits = st.sidebar.slider(
+        "Number of deposits per mineral",
+        10,
+        500,
+        100,
+        10,
+        help="Higher values increase point density and rendering time.",
+    )
+    random_seed = st.sidebar.number_input(
+        "Random seed",
+        value=42,
+        step=1,
+        help="Use the same seed to reproduce the same deposit layout.",
+    )
 
     modeling_mode = st.sidebar.radio(
         "Geological modelling mode",
@@ -68,8 +90,8 @@ def render_mineral_view():
     )
 
     st.sidebar.markdown("**Geological Parameters:**")
-    depth_factor = st.sidebar.slider("Depth influence", 0.1, 2.0, 1.0, 0.1)
-    structural_complexity = st.sidebar.slider("Structural complexity", 1, 5, 3, 1)
+    depth_factor = st.sidebar.slider("Depth influence", 0.1, 2.0, 1.0, 0.1, help="Scales the vertical spread of the generated deposit.")
+    structural_complexity = st.sidebar.slider("Structural complexity", 1, 5, 3, 1, help="Controls branching, layering, and scatter.")
 
     deposits = {}
     for mineral in selected_minerals:
@@ -134,9 +156,13 @@ def render_mineral_view():
 
 
 def render_petroleum_view():
-    st.header("Petroleum Deposit Modelling")
+    render_view_header(
+        "Petroleum Deposit Modelling",
+        "Model synthetic hydrocarbon basins with traps, reservoirs, and depth patterns.",
+    )
 
     st.sidebar.markdown("**Select petroleum deposits to display:**")
+    st.sidebar.caption("Each selected deposit type is generated with the same basin settings and seed.")
     selected_petroleum = [p for p in PETROLEUM if st.sidebar.checkbox(p, value=True, key=f"pet_{p}")]
 
     if not selected_petroleum:
@@ -144,10 +170,16 @@ def render_petroleum_view():
         return
 
     st.sidebar.markdown("**Petroleum Parameters:**")
-    basin_size = st.sidebar.slider("Basin size (km)", 20, 100, 50, 10)
-    reservoir_count = st.sidebar.slider("Number of reservoirs", 1, 8, 3, 1)
-    trap_efficiency = st.sidebar.slider("Trap efficiency", 0.1, 1.0, 0.6, 0.1)
-    pet_random_seed = st.sidebar.number_input("Random seed", value=42, step=1, key="pet_seed")
+    basin_size = st.sidebar.slider("Basin size (km)", 20, 100, 50, 10, help="Larger basins spread reservoirs across a wider area.")
+    reservoir_count = st.sidebar.slider("Number of reservoirs", 1, 8, 3, 1, help="More reservoirs add more trap clusters.")
+    trap_efficiency = st.sidebar.slider("Trap efficiency", 0.1, 1.0, 0.6, 0.1, help="Higher values concentrate more points into each trap.")
+    pet_random_seed = st.sidebar.number_input(
+        "Random seed",
+        value=42,
+        step=1,
+        key="pet_seed",
+        help="Use the same seed to keep basin geometry reproducible.",
+    )
 
     petroleum_deposits = {}
     for pet_type in selected_petroleum:
@@ -212,11 +244,15 @@ def render_petroleum_view():
 
 
 def render_real_data_view():
-    st.header("Real-World Commodity Production Data")
+    render_view_header(
+        "Real-World Commodity Production Data",
+        "Compare sample EIA and USGS-style summaries, or overlay your own coordinate data.",
+    )
     real_data_source = st.radio(
         "Select real-world dataset:",
         ["EIA Energy", "USGS Minerals"],
         horizontal=True,
+        help="Switch between energy production trends and mineral production snapshots.",
     )
 
     if real_data_source == "EIA Energy":
@@ -342,6 +378,7 @@ def render_real_data_view():
         "Upload CSV with columns: x, y, z, label (optional)",
         type=["csv"],
         key="uploaded_real_points",
+        help="Upload a UTF-8 CSV with x, y, z columns; label is optional.",
     )
 
     if uploaded_file is not None:
