@@ -11,6 +11,7 @@ __date__ = "03/7/2025"
 import numpy as np
 import streamlit as st
 import plotly.graph_objects as go
+import hashlib
 from scipy.spatial.distance import cdist
 
 # defining minerals and their colors
@@ -29,6 +30,13 @@ petroleum = {
     'Oil Shale': 'darkslategray',
     'Gas Hydrates': 'lightcyan'
 }
+
+
+def derive_stable_seed(base_seed, label):
+    """Create a deterministic per-label seed from a user-provided base seed."""
+    key = f"{int(base_seed)}:{label}".encode("utf-8")
+    digest = hashlib.blake2b(key, digest_size=4).digest()
+    return int.from_bytes(digest, "little")
 
 st.title('Sims N Stuff')
 st.markdown('Visualise realistic 3D deposits of minerals and petroleum using advanced geological modelling.')
@@ -68,7 +76,7 @@ if deposit_type == "Mineral Deposits":
 
     def generate_realistic_deposits(mineral, mode, n_deposits, seed, depth_factor, complexity):
         """Generate geologically realistic mineral deposits"""
-        np.random.seed(seed + hash(mineral) % 1000)
+        np.random.seed(derive_stable_seed(seed, mineral))
         
         if mode == 'Orebody systems':
             # Create pipe-like or lode-like orebodies
@@ -275,7 +283,7 @@ else:  # Petroleum Deposits
         st.warning("Please select at least one petroleum deposit type to display the model.")
     def generate_petroleum_deposits(deposit_type, basin_size, reservoir_count, trap_efficiency, seed):
         """Generate realistic petroleum deposits"""
-        np.random.seed(seed + hash(deposit_type) % 1000)
+        np.random.seed(derive_stable_seed(seed, deposit_type))
         
         reservoirs = []
         

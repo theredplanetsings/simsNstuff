@@ -43,6 +43,9 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 - **Colour-coded Deposits:** Easy identification of different mineral and petroleum types
 - **Click-only Controls:** Radio buttons prevent accidental text input
 
+## Updates
+- **2026-04-03 (Section 1):** Added deterministic seed derivation so the same input seed now produces reproducible results across runs and environments.
+
 ### Mineral Deposit Modelling Modes
 Advanced geological modelling styles for mineral deposits:
 
