@@ -215,7 +215,7 @@ if deposit_type == "Mineral Deposits":
     if selected_minerals:
         deposits = {}
         
-        for mineral in minerals:
+        for mineral in selected_minerals:
             deposits[mineral] = generate_realistic_deposits(
                 mineral, modeling_mode, n_deposits, random_seed, depth_factor, structural_complexity
             )
@@ -374,7 +374,7 @@ else:  # Petroleum Deposits
     if selected_petroleum:
         petroleum_deposits = {}
         
-        for pet_type in petroleum:
+        for pet_type in selected_petroleum:
             petroleum_deposits[pet_type] = generate_petroleum_deposits(
                 pet_type, basin_size, reservoir_count, trap_efficiency, pet_random_seed
             )

@@ -46,6 +46,7 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 ## Updates
 - **2026-04-03 (Section 1):** Added deterministic seed derivation so the same input seed now produces reproducible results across runs and environments.
 - **2026-04-03 (Section 2):** Switched generation logic to local `numpy.random.default_rng(...)` instances so modelling no longer mutates global RNG state.
+- **2026-04-03 (Section 3):** Optimised performance by generating coordinates only for selected minerals and petroleum deposit types.
 
 ### Mineral Deposit Modelling Modes
 Advanced geological modelling styles for mineral deposits:
