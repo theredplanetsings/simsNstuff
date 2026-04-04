@@ -8,6 +8,9 @@ A 3D Geological Deposit Modelling Programme
 __author__ = "https://github.com/theredplanetsings"
 __date__ = "03/7/2025"
 """
+import csv
+import io
+
 import streamlit as st
 import plotly.graph_objects as go
 
@@ -27,8 +30,22 @@ petroleum = {
     "Oil": "darkgreen",
     "Natural Gas": "lightblue",
     "Oil Shale": "darkslategray",
-    "Gas Hydrates": "lightcyan",
+    "Gas Hydrates": "dodgerblue",
 }
+
+
+def build_points_csv(points_by_label, unit_label):
+    """Convert grouped 3D points into CSV text for download."""
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["deposit_type", "x", "y", "z", "z_unit"])
+
+    for label, coords in points_by_label.items():
+        for x, y, z in coords:
+            writer.writerow([label, f"{x:.6f}", f"{y:.6f}", f"{z:.6f}", unit_label])
+
+    return output.getvalue()
+
 
 st.title("Sims N Stuff")
 st.markdown("Visualise realistic 3D deposits of minerals and petroleum using advanced geological modelling.")
@@ -79,7 +96,7 @@ if deposit_type == "Mineral Deposits":
                     y=coords[:, 1],
                     z=coords[:, 2],
                     mode="markers",
-                    marker=dict(size=6, color=minerals[mineral], opacity=0.8),
+                    marker=dict(size=6, color=minerals[mineral], opacity=0.8, line=dict(color="white", width=1)),
                     name=mineral,
                     hovertemplate=f"<b>{mineral}</b><br>X: %{{x:.1f}}<br>Y: %{{y:.1f}}<br>Depth: %{{z:.1f}}<extra></extra>",
                 )
@@ -111,6 +128,19 @@ if deposit_type == "Mineral Deposits":
             st.info("**Contact Metamorphic:** Deposits formed in aureoles around igneous intrusions through thermal metamorphism.")
         elif modeling_mode == "Placer deposits":
             st.info("**Placer Deposits:** Concentration of heavy minerals in alluvial sediments. Common for gold and gemstones.")
+
+        with st.expander("Model assumptions and units"):
+            st.markdown("- X and Y represent conceptual basin coordinates in kilometres.")
+            st.markdown("- Z is modelled elevation/depth output in metres.")
+            st.markdown("- These are synthetic datasets for exploration and visualisation only.")
+
+        mineral_csv = build_points_csv(deposits, "m")
+        st.download_button(
+            "Download mineral points (CSV)",
+            data=mineral_csv,
+            file_name="mineral_deposits.csv",
+            mime="text/csv",
+        )
 
 else:
     st.header("Petroleum Deposit Modelling")
@@ -146,7 +176,7 @@ else:
                         y=coords[:, 1],
                         z=coords[:, 2],
                         mode="markers",
-                        marker=dict(size=8, color=petroleum[pet_type], opacity=0.7),
+                        marker=dict(size=8, color=petroleum[pet_type], opacity=0.7, line=dict(color="black", width=1)),
                         name=pet_type,
                         hovertemplate=f"<b>{pet_type}</b><br>X: %{{x:.1f}}<br>Y: %{{y:.1f}}<br>Depth: %{{z:.0f}}m<extra></extra>",
                     )
@@ -176,6 +206,19 @@ else:
         - **Traps** concentrate hydrocarbons (structural, stratigraphic, combination)
         - **Seal rocks** prevent further migration
         """
+        )
+
+        with st.expander("Model assumptions and units"):
+            st.markdown("- X and Y represent conceptual basin coordinates in kilometres.")
+            st.markdown("- Z represents modelled depth in metres.")
+            st.markdown("- Generated reservoirs are simplified trap analogues, not field-calibrated predictions.")
+
+        petroleum_csv = build_points_csv(petroleum_deposits, "m")
+        st.download_button(
+            "Download petroleum points (CSV)",
+            data=petroleum_csv,
+            file_name="petroleum_deposits.csv",
+            mime="text/csv",
         )
 
 st.markdown("---")

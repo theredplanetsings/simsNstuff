@@ -46,6 +46,7 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 - **Realistic Geological Modelling:** Based on actual geological principles and formations
 - **Colour-coded Deposits:** Easy identification of different mineral and petroleum types
 - **Click-only Controls:** Radio buttons prevent accidental text input
+- **Export Ready:** Download generated mineral and petroleum point clouds as CSV files
 
 ## Updates
 - **2026-04-03 (Section 1):** Added deterministic seed derivation so the same input seed now produces reproducible results across runs and environments.
@@ -54,6 +55,7 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 - **2026-04-03 (Section 4):** Refactored geological generation logic into `generators.py` to improve maintainability and enable isolated testing.
 - **2026-04-03 (Section 5):** Added baseline unit tests for deterministic output and core shape contracts in geological generators.
 - **2026-04-03 (Section 6):** Added repository cleanup and consistency updates: `.gitignore`, cross-platform run notes, dependency version bounds, and UI wording alignment.
+- **2026-04-03 (Section 7):** Added UX upgrades: CSV download buttons, assumptions/units explainers, and improved high-contrast marker styling.
 
 ### Running Tests
 From the project root, run:
