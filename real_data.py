@@ -1,38 +1,4 @@
-"""
-Real-world commodity data integration from EIA and public sources.
-Fetches and displays actual oil, gas, and coal production trends.
-"""
-import json
-import urllib.request
-import urllib.error
-
-
-def fetch_eia_production_data(series_id):
-    """
-    Fetch time-series data from EIA API.
-    Common series IDs:
-    - COAL.TOTAL_PRODUCTION.ALL.A: Total US coal production (annual)
-    - PET.CCRPUS2.A: US crude oil production (annual)
-    - NG.TOTAL_PROD.A: US natural gas production (annual)
-    
-    Returns list of (year, value) tuples or empty list if fetch fails.
-    """
-    base_url = "https://www.eia.gov/opendata/qb.php?category={}&api_key={}&out=json"
-    # This uses public/demo access without requiring API key registration
-    try:
-        # Build simplified query (public endpoints)
-        url = f"https://www.eia.gov/opendata/qb.php?series_id={series_id}&api_key=demo_key&out=json"
-        with urllib.request.urlopen(url, timeout=5) as response:
-            data = json.loads(response.read().decode())
-            if "series" in data and len(data["series"]) > 0:
-                series = data["series"][0]
-                if "data" in series:
-                    # Return sorted by year (most recent first)
-                    return sorted(series["data"], key=lambda x: x[0], reverse=True)
-        return []
-    except (urllib.error.URLError, json.JSONDecodeError, Exception):
-        # Graceful fallback if API unavailable
-        return []
+"""Sample real-world commodity data helpers for the Streamlit app."""
 
 
 def get_sample_production_data():
