@@ -15,7 +15,11 @@ def parse_uploaded_points(uploaded_bytes):
     - Required: x, y, z
     - Optional: label (defaults to "Uploaded")
     """
-    text = uploaded_bytes.decode("utf-8")
+    try:
+        text = uploaded_bytes.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise ValueError("CSV must be UTF-8 encoded.") from exc
+
     reader = csv.DictReader(io.StringIO(text))
 
     if reader.fieldnames is None:
@@ -30,17 +34,24 @@ def parse_uploaded_points(uploaded_bytes):
     for row in reader:
         row_count += 1
         key_map = {k.strip().lower(): v for k, v in row.items() if k is not None}
+
+        if not any((value or "").strip() for value in key_map.values()):
+            continue
+
         try:
-            x_val = float(key_map["x"])
-            y_val = float(key_map["y"])
-            z_val = float(key_map["z"])
-        except (TypeError, ValueError) as exc:
+            x_val = float((key_map.get("x") or "").strip())
+            y_val = float((key_map.get("y") or "").strip())
+            z_val = float((key_map.get("z") or "").strip())
+        except (KeyError, TypeError, ValueError) as exc:
             raise ValueError(f"Invalid numeric values at row {row_count}") from exc
 
-        label = key_map.get("label", "Uploaded").strip() or "Uploaded"
+        label = (key_map.get("label") or "Uploaded").strip() or "Uploaded"
         groups.setdefault(label, []).append((x_val, y_val, z_val))
 
     if row_count == 0:
         raise ValueError("CSV contains no data rows.")
+
+    if not groups:
+        raise ValueError("CSV contains no valid coordinate rows.")
 
     return groups
