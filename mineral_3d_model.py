@@ -15,6 +15,7 @@ import streamlit as st
 import plotly.graph_objects as go
 
 from generators import generate_petroleum_deposits, generate_realistic_deposits
+from real_data import format_production_summary, get_sample_production_data
 
 # defining minerals and their colors
 minerals = {
@@ -51,8 +52,8 @@ st.title("Sims N Stuff")
 st.markdown("Visualise realistic 3D deposits of minerals and petroleum using advanced geological modelling.")
 
 deposit_type = st.radio(
-    "Select deposit type:",
-    ["Mineral Deposits", "Petroleum Deposits"],
+    "Select view:",
+    ["Mineral Deposits", "Petroleum Deposits", "Real Data"],
     horizontal=True,
 )
 
@@ -142,7 +143,7 @@ if deposit_type == "Mineral Deposits":
             mime="text/csv",
         )
 
-else:
+elif deposit_type == "Petroleum Deposits":
     st.header("Petroleum Deposit Modelling")
 
     st.sidebar.markdown("**Select petroleum deposits to display:**")
@@ -220,6 +221,92 @@ else:
             file_name="petroleum_deposits.csv",
             mime="text/csv",
         )
+
+elif deposit_type == "Real Data":
+    st.header("Real-World Commodity Production Data")
+    st.markdown(format_production_summary())
+
+    with st.expander("📊 Production Trends Chart"):
+        data = get_sample_production_data()
+
+        # Coal production trend
+        coal_years, coal_values = zip(*data["coal_production"])
+        fig_coal = go.Figure()
+        fig_coal.add_trace(
+            go.Scatter(
+                x=coal_years,
+                y=coal_values,
+                mode="lines+markers",
+                name="Coal Production",
+                line=dict(color="black", width=3),
+                marker=dict(size=8),
+            )
+        )
+        fig_coal.update_layout(
+            title="U.S. Coal Production (Million Short Tons)",
+            xaxis_title="Year",
+            yaxis_title="Production (M tons)",
+            hovermode="x unified",
+            template="plotly_dark",
+            height=400,
+        )
+        st.plotly_chart(fig_coal, use_container_width=True)
+
+        # Oil production trend
+        oil_years, oil_values = zip(*data["crude_oil_production"])
+        fig_oil = go.Figure()
+        fig_oil.add_trace(
+            go.Scatter(
+                x=oil_years,
+                y=oil_values,
+                mode="lines+markers",
+                name="Crude Oil Production",
+                line=dict(color="darkgreen", width=3),
+                marker=dict(size=8),
+            )
+        )
+        fig_oil.update_layout(
+            title="U.S. Crude Oil Production (Million Barrels/Day)",
+            xaxis_title="Year",
+            yaxis_title="Production (M bbl/day)",
+            hovermode="x unified",
+            template="plotly_dark",
+            height=400,
+        )
+        st.plotly_chart(fig_oil, use_container_width=True)
+
+        # Natural Gas production trend
+        gas_years, gas_values = zip(*data["natural_gas_production"])
+        fig_gas = go.Figure()
+        fig_gas.add_trace(
+            go.Scatter(
+                x=gas_years,
+                y=gas_values,
+                mode="lines+markers",
+                name="Natural Gas Production",
+                line=dict(color="lightblue", width=3),
+                marker=dict(size=8),
+            )
+        )
+        fig_gas.update_layout(
+            title="U.S. Natural Gas Production (Billion Cubic Feet/Day)",
+            xaxis_title="Year",
+            yaxis_title="Production (Bcf/day)",
+            hovermode="x unified",
+            template="plotly_dark",
+            height=400,
+        )
+        st.plotly_chart(fig_gas, use_container_width=True)
+
+    st.markdown("### Data Sources")
+    st.info(
+        """
+        **U.S. Energy Information Administration (EIA):**
+        - Annual production statistics for coal, crude oil, and natural gas
+        - Official government data: https://www.eia.gov/opendata/
+        - Historical trends inform exploration strategies and resource planning
+        """
+    )
 
 st.markdown("---")
 st.markdown("**Instructions:**")
