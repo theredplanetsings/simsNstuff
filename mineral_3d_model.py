@@ -53,11 +53,21 @@ def build_points_csv(points_by_label, unit_label):
 st.title("Sims N Stuff")
 st.markdown("Visualise realistic 3D deposits of minerals and petroleum using advanced geological modelling.")
 
+st.sidebar.markdown("### Available Features")
+st.sidebar.markdown("- Mineral deposit modelling")
+st.sidebar.markdown("- Petroleum deposit modelling")
+st.sidebar.markdown("- Real Data: EIA energy trends")
+st.sidebar.markdown("- Real Data: USGS mineral snapshot")
+st.sidebar.markdown("- CSV upload for custom mine/well overlays")
+
 deposit_type = st.radio(
     "Select view:",
     ["Mineral Deposits", "Petroleum Deposits", "Real Data"],
-    horizontal=True,
+    horizontal=False,
 )
+
+if deposit_type == "Real Data":
+    st.caption("Real Data includes EIA trends, USGS mineral statistics, and CSV upload overlays.")
 
 if deposit_type == "Mineral Deposits":
     st.header("Mineral Deposit Modelling")
