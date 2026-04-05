@@ -1,6 +1,6 @@
-# Sims N Stuff: 3D Geological Deposit Modelling Programme
+# Sims N Stuff: 3D Mineral/Petroleum Deposit Modelling Programme
 
-A Streamlit webapp to visualise realistic 3D deposits of minerals and petroleum using advanced geological modelling.
+Streamlit webapp for visualising 3D deposits of minerals & petroleum with geological modelling.
 
 **Live Demo:** https://simsnstuff.streamlit.app/
 
