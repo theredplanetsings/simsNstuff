@@ -49,10 +49,19 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 - **Click-only Controls:** Radio buttons prevent accidental text input
 - **Export Ready:** Download generated mineral and petroleum point clouds as CSV files
 
-## Updates
+## Changelog
+
+### 2026-04-05
+- Hardened seed and numeric validation paths in generator logic with clearer error handling.
+- Expanded edge-case unit coverage for generators, CSV parsing, and CSV export formatting.
+- Improved generation performance by vectorizing petroleum deposit point creation.
+- Refactored repeated plotting and assumptions UI code into reusable app view helpers.
+- Unified Plotly chart styling across mineral, petroleum, real-data, and uploaded-data views.
+- Added baseline project quality tooling (`pyproject.toml`) and CI test workflow (`.github/workflows/tests.yml`).
+
+### Earlier Updates
 - Added clearer captions and widget help text for a more guided UI.
 - Removed the unused live EIA fetch stub and kept the real-data helpers focused.
-- Expanded tests for parser validation, generator edge cases, and CSV export formatting.
 - Hardened CSV parsing and generator input validation for invalid inputs.
 - Split the Streamlit UI into reusable view modules for easier maintenance.
 - Deterministic generation with stable seeds and local RNG usage.
