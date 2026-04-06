@@ -45,6 +45,25 @@ class TestCsvOverlay(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "CSV contains no data rows."):
             parse_uploaded_points(payload)
 
+    def test_parse_uploaded_points_rejects_non_utf8_payload(self):
+        payload = b"\xff\xfe\x00\x00"
+
+        with self.assertRaisesRegex(ValueError, "CSV must be UTF-8 encoded"):
+            parse_uploaded_points(payload)
+
+    def test_parse_uploaded_points_rejects_header_only_csv(self):
+        payload = "x,y,z\n".encode("utf-8")
+
+        with self.assertRaisesRegex(ValueError, "CSV contains no data rows."):
+            parse_uploaded_points(payload)
+
+    def test_parse_uploaded_points_uses_default_label_when_blank(self):
+        payload = "x,y,z,label\n1,2,3,\n".encode("utf-8")
+
+        parsed = parse_uploaded_points(payload)
+
+        self.assertEqual(parsed, {"Uploaded": [(1.0, 2.0, 3.0)]})
+
 
 if __name__ == "__main__":
     unittest.main()
