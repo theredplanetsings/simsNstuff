@@ -26,6 +26,36 @@ PETROLEUM = {
 }
 
 
+def _render_model_assumptions(z_label, detail_line):
+    with st.expander("Model assumptions and units"):
+        st.markdown("- X and Y represent conceptual basin coordinates in kilometres.")
+        st.markdown(f"- Z {z_label} in metres.")
+        st.markdown(f"- {detail_line}")
+
+
+def _build_line_figure(years, values, name, line_color, title, yaxis_title):
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=years,
+            y=values,
+            mode="lines+markers",
+            name=name,
+            line=dict(color=line_color, width=3),
+            marker=dict(size=8),
+        )
+    )
+    fig.update_layout(
+        title=title,
+        xaxis_title="Year",
+        yaxis_title=yaxis_title,
+        hovermode="x unified",
+        template="plotly_dark",
+        height=400,
+    )
+    return fig
+
+
 def build_points_csv(points_by_label, unit_label):
     """Convert grouped 3D points into CSV text for download."""
     output = io.StringIO()
@@ -141,10 +171,10 @@ def render_mineral_view():
     elif modeling_mode == "Placer deposits":
         st.info("**Placer Deposits:** Concentration of heavy minerals in alluvial sediments. Common for gold and gemstones.")
 
-    with st.expander("Model assumptions and units"):
-        st.markdown("- X and Y represent conceptual basin coordinates in kilometres.")
-        st.markdown("- Z is modelled elevation/depth output in metres.")
-        st.markdown("- These are synthetic datasets for exploration and visualisation only.")
+    _render_model_assumptions(
+        "is modelled elevation/depth output",
+        "These are synthetic datasets for exploration and visualisation only.",
+    )
 
     mineral_csv = build_points_csv(deposits, "m")
     st.download_button(
@@ -229,10 +259,10 @@ def render_petroleum_view():
     """
     )
 
-    with st.expander("Model assumptions and units"):
-        st.markdown("- X and Y represent conceptual basin coordinates in kilometres.")
-        st.markdown("- Z represents modelled depth in metres.")
-        st.markdown("- Generated reservoirs are simplified trap analogues, not field-calibrated predictions.")
+    _render_model_assumptions(
+        "represents modelled depth",
+        "Generated reservoirs are simplified trap analogues, not field-calibrated predictions.",
+    )
 
     petroleum_csv = build_points_csv(petroleum_deposits, "m")
     st.download_button(
@@ -262,68 +292,35 @@ def render_real_data_view():
             data = get_sample_production_data()
 
             coal_years, coal_values = zip(*data["coal_production"])
-            fig_coal = go.Figure()
-            fig_coal.add_trace(
-                go.Scatter(
-                    x=coal_years,
-                    y=coal_values,
-                    mode="lines+markers",
-                    name="Coal Production",
-                    line=dict(color="black", width=3),
-                    marker=dict(size=8),
-                )
-            )
-            fig_coal.update_layout(
-                title="U.S. Coal Production (Million Short Tons)",
-                xaxis_title="Year",
-                yaxis_title="Production (M tons)",
-                hovermode="x unified",
-                template="plotly_dark",
-                height=400,
+            fig_coal = _build_line_figure(
+                coal_years,
+                coal_values,
+                "Coal Production",
+                "black",
+                "U.S. Coal Production (Million Short Tons)",
+                "Production (M tons)",
             )
             st.plotly_chart(fig_coal, use_container_width=True)
 
             oil_years, oil_values = zip(*data["crude_oil_production"])
-            fig_oil = go.Figure()
-            fig_oil.add_trace(
-                go.Scatter(
-                    x=oil_years,
-                    y=oil_values,
-                    mode="lines+markers",
-                    name="Crude Oil Production",
-                    line=dict(color="darkgreen", width=3),
-                    marker=dict(size=8),
-                )
-            )
-            fig_oil.update_layout(
-                title="U.S. Crude Oil Production (Million Barrels/Day)",
-                xaxis_title="Year",
-                yaxis_title="Production (M bbl/day)",
-                hovermode="x unified",
-                template="plotly_dark",
-                height=400,
+            fig_oil = _build_line_figure(
+                oil_years,
+                oil_values,
+                "Crude Oil Production",
+                "darkgreen",
+                "U.S. Crude Oil Production (Million Barrels/Day)",
+                "Production (M bbl/day)",
             )
             st.plotly_chart(fig_oil, use_container_width=True)
 
             gas_years, gas_values = zip(*data["natural_gas_production"])
-            fig_gas = go.Figure()
-            fig_gas.add_trace(
-                go.Scatter(
-                    x=gas_years,
-                    y=gas_values,
-                    mode="lines+markers",
-                    name="Natural Gas Production",
-                    line=dict(color="lightblue", width=3),
-                    marker=dict(size=8),
-                )
-            )
-            fig_gas.update_layout(
-                title="U.S. Natural Gas Production (Billion Cubic Feet/Day)",
-                xaxis_title="Year",
-                yaxis_title="Production (Bcf/day)",
-                hovermode="x unified",
-                template="plotly_dark",
-                height=400,
+            fig_gas = _build_line_figure(
+                gas_years,
+                gas_values,
+                "Natural Gas Production",
+                "lightblue",
+                "U.S. Natural Gas Production (Billion Cubic Feet/Day)",
+                "Production (Bcf/day)",
             )
             st.plotly_chart(fig_gas, use_container_width=True)
 
