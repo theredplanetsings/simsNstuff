@@ -25,6 +25,8 @@ PETROLEUM = {
     "Gas Hydrates": "dodgerblue",
 }
 
+CHART_TEMPLATE = "plotly_white"
+
 
 def _render_model_assumptions(z_label, detail_line):
     with st.expander("Model assumptions and units"):
@@ -50,7 +52,7 @@ def _build_line_figure(years, values, name, line_color, title, yaxis_title):
         xaxis_title="Year",
         yaxis_title=yaxis_title,
         hovermode="x unified",
-        template="plotly_dark",
+        template=CHART_TEMPLATE,
         height=400,
     )
     return fig
@@ -146,6 +148,7 @@ def render_mineral_view():
 
     fig_minerals.update_layout(
         title=f"3D Mineral Deposit Model - {modeling_mode}",
+        template=CHART_TEMPLATE,
         scene=dict(
             xaxis_title="Easting (km)",
             yaxis_title="Northing (km)",
@@ -235,6 +238,7 @@ def render_petroleum_view():
 
     fig_petroleum.update_layout(
         title="3D Petroleum Deposit Model - Sedimentary Basin",
+        template=CHART_TEMPLATE,
         scene=dict(
             xaxis_title="Easting (km)",
             yaxis_title="Northing (km)",
@@ -356,7 +360,7 @@ def render_real_data_view():
             title="Latest USGS-Style Mineral Production Snapshot",
             xaxis_title="Commodity",
             yaxis_title="Production (mixed commodity units)",
-            template="plotly_dark",
+            template=CHART_TEMPLATE,
             height=450,
         )
         st.plotly_chart(fig_usgs, use_container_width=True)
@@ -415,13 +419,13 @@ def render_real_data_view():
 
             fig_uploaded.update_layout(
                 title="Uploaded Mine/Well Coordinates (3D)",
+                template=CHART_TEMPLATE,
                 scene=dict(
                     xaxis_title="X",
                     yaxis_title="Y",
                     zaxis_title="Z",
                     camera=dict(eye=dict(x=1.4, y=1.4, z=1.1)),
                 ),
-                template="plotly_dark",
                 height=560,
             )
 
