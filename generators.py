@@ -214,7 +214,7 @@ def generate_petroleum_deposits(deposit_type, basin_size, reservoir_count, trap_
 
     rng = np.random.default_rng(derive_stable_seed(seed, deposit_type))
 
-    reservoirs = []
+    reservoir_blocks = []
 
     for _ in range(reservoir_count):
         basin_center = rng.uniform(-basin_size / 2, basin_size / 2, size=2)
@@ -236,50 +236,40 @@ def generate_petroleum_deposits(deposit_type, basin_size, reservoir_count, trap_
 
         if trap_type == "anticline":
             n_points = int(100 * trap_efficiency)
-            coords = []
+            r = rng.exponential(basin_size / 8, size=n_points)
+            theta = rng.uniform(0, 2 * np.pi, size=n_points)
 
-            for _ in range(n_points):
-                r = rng.exponential(basin_size / 8)
-                theta = rng.uniform(0, 2 * np.pi)
+            xs = basin_center[0] + r * np.cos(theta)
+            ys = basin_center[1] + r * np.sin(theta)
+            elevation_factor = np.exp(-r / (basin_size / 6))
+            zs = depth_base + thickness * elevation_factor + rng.normal(0, thickness / 10, size=n_points)
 
-                x = basin_center[0] + r * np.cos(theta)
-                y = basin_center[1] + r * np.sin(theta)
-
-                elevation_factor = np.exp(-r / (basin_size / 6))
-                z = depth_base + thickness * elevation_factor + rng.normal(0, thickness / 10)
-
-                coords.append([x, y, z])
+            coords = np.column_stack((xs, ys, zs))
 
         elif trap_type == "fault_trap":
             n_points = int(80 * trap_efficiency)
-            coords = []
-
             fault_strike = rng.uniform(0, 2 * np.pi)
             fault_normal = np.array([-np.sin(fault_strike), np.cos(fault_strike)])
+            along_vector = np.array([np.cos(fault_strike), np.sin(fault_strike)])
 
-            for _ in range(n_points):
-                distance_from_fault = rng.exponential(basin_size / 10)
-                along_fault = rng.uniform(-basin_size / 4, basin_size / 4)
+            distance_from_fault = rng.exponential(basin_size / 10, size=n_points)
+            along_fault = rng.uniform(-basin_size / 4, basin_size / 4, size=n_points)
 
-                pos = basin_center + distance_from_fault * fault_normal
-                pos += along_fault * np.array([np.cos(fault_strike), np.sin(fault_strike)])
+            positions = basin_center + np.outer(distance_from_fault, fault_normal)
+            positions += np.outer(along_fault, along_vector)
+            zs = depth_base + rng.uniform(0, thickness, size=n_points)
 
-                x, y = pos
-                z = depth_base + rng.uniform(0, thickness)
-
-                coords.append([x, y, z])
+            coords = np.column_stack((positions[:, 0], positions[:, 1], zs))
 
         else:  # stratigraphic trap
             n_points = int(60 * trap_efficiency)
-            coords = []
+            xs = basin_center[0] + rng.normal(0, basin_size / 6, size=n_points)
+            ys = basin_center[1] + rng.normal(0, basin_size / 6, size=n_points)
+            zs = depth_base + rng.uniform(0, thickness, size=n_points)
 
-            for _ in range(n_points):
-                x = basin_center[0] + rng.normal(0, basin_size / 6)
-                y = basin_center[1] + rng.normal(0, basin_size / 6)
-                z = depth_base + rng.uniform(0, thickness)
+            coords = np.column_stack((xs, ys, zs))
 
-                coords.append([x, y, z])
+        if len(coords) > 0:
+            reservoir_blocks.append(coords)
 
-        reservoirs.extend(coords)
-
-    return np.array(reservoirs) if reservoirs else _empty_coords()
+    return np.vstack(reservoir_blocks) if reservoir_blocks else _empty_coords()
