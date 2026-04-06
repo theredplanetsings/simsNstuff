@@ -4,12 +4,32 @@ import numpy as np
 
 def derive_stable_seed(base_seed, label):
     """Create a deterministic per-label seed from a user-provided base seed."""
-    key = f"{int(base_seed)}:{label}".encode("utf-8")
+    normalized_seed = _normalize_seed(base_seed)
+    key = f"{normalized_seed}:{label}".encode("utf-8")
     digest = hashlib.blake2b(key, digest_size=4).digest()
     return int.from_bytes(digest, "little")
 
 
+def _normalize_seed(base_seed):
+    if isinstance(base_seed, (bool, np.bool_)):
+        raise TypeError("seed must be an integer value, not a boolean.")
+
+    if isinstance(base_seed, (int, np.integer)):
+        return int(base_seed)
+
+    if isinstance(base_seed, (float, np.floating)):
+        if not np.isfinite(base_seed):
+            raise ValueError("seed must be finite.")
+        if not float(base_seed).is_integer():
+            raise ValueError("seed must be a whole number.")
+        return int(base_seed)
+
+    raise TypeError("seed must be an integer value.")
+
+
 def _validate_non_negative_int(value, name):
+    if isinstance(value, (bool, np.bool_)):
+        raise TypeError(f"{name} must be an integer.")
     if not isinstance(value, (int, np.integer)):
         raise TypeError(f"{name} must be an integer.")
     if value < 0:
@@ -23,6 +43,8 @@ def _validate_positive_int(value, name):
 
 
 def _validate_depth_factor(depth_factor):
+    if not isinstance(depth_factor, (int, float, np.integer, np.floating)):
+        raise TypeError("depth_factor must be a real number.")
     if not np.isfinite(depth_factor):
         raise ValueError("depth_factor must be finite.")
     if depth_factor <= 0:
@@ -30,6 +52,8 @@ def _validate_depth_factor(depth_factor):
 
 
 def _validate_trap_efficiency(trap_efficiency):
+    if not isinstance(trap_efficiency, (int, float, np.integer, np.floating)):
+        raise TypeError("trap_efficiency must be a real number.")
     if not np.isfinite(trap_efficiency):
         raise ValueError("trap_efficiency must be finite.")
     if trap_efficiency < 0 or trap_efficiency > 1:
