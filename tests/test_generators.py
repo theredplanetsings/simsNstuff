@@ -51,6 +51,14 @@ class GeneratorContractTests(unittest.TestCase):
         with self.assertRaisesRegex(TypeError, "seed must be an integer value"):
             generate_realistic_deposits("Copper", "Orebody systems", 10, "abc", 1.2, 4)
 
+    def test_mineral_generation_rejects_boolean_seed(self):
+        with self.assertRaisesRegex(TypeError, "seed must be an integer value"):
+            generate_realistic_deposits("Copper", "Orebody systems", 10, True, 1.2, 4)
+
+    def test_mineral_generation_rejects_non_finite_seed(self):
+        with self.assertRaisesRegex(ValueError, "seed must be finite"):
+            generate_realistic_deposits("Copper", "Orebody systems", 10, np.inf, 1.2, 4)
+
     def test_mineral_generation_rejects_non_numeric_depth_factor(self):
         with self.assertRaisesRegex(TypeError, "depth_factor must be a real number"):
             generate_realistic_deposits("Copper", "Orebody systems", 10, 11, "deep", 4)
@@ -86,6 +94,10 @@ class GeneratorContractTests(unittest.TestCase):
     def test_petroleum_generation_rejects_negative_reservoir_count(self):
         with self.assertRaisesRegex(ValueError, "reservoir_count must be greater than or equal to 0"):
             generate_petroleum_deposits("Oil", 50, -1, 0.6, 42)
+
+    def test_petroleum_generation_rejects_boolean_reservoir_count(self):
+        with self.assertRaisesRegex(TypeError, "reservoir_count must be an integer"):
+            generate_petroleum_deposits("Oil", 50, False, 0.6, 42)
 
     def test_petroleum_generation_rejects_non_numeric_trap_efficiency(self):
         with self.assertRaisesRegex(TypeError, "trap_efficiency must be a real number"):
