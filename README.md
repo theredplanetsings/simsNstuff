@@ -2,7 +2,7 @@
 
 Streamlit webapp for visualising 3D deposits of minerals & petroleum with geological modelling.
 
-**Live Demo:** https://simsnstuff.streamlit.app/
+**Dashboard:** https://simsnstuff.streamlit.app/
 
 ### What You Can Do:
 - **Mineral Deposits:** Model silver, gold, iron, copper, and coal using realistic geological formations
