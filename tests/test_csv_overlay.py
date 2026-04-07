@@ -64,6 +64,19 @@ class TestCsvOverlay(unittest.TestCase):
 
         self.assertEqual(parsed, {"Uploaded": [(1.0, 2.0, 3.0)]})
 
+    def test_parse_uploaded_points_accepts_whitespace_in_headers(self):
+        payload = " X , Y , Z , Label \n1,2,3,Mine A\n".encode("utf-8")
+
+        parsed = parse_uploaded_points(payload)
+
+        self.assertEqual(parsed, {"Mine A": [(1.0, 2.0, 3.0)]})
+
+    def test_parse_uploaded_points_rejects_non_finite_values(self):
+        payload = "x,y,z\n1,nan,3\n".encode("utf-8")
+
+        with self.assertRaisesRegex(ValueError, "Invalid numeric values at row 1"):
+            parse_uploaded_points(payload)
+
 
 if __name__ == "__main__":
     unittest.main()

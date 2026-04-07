@@ -2,6 +2,7 @@
 
 import csv
 import io
+import math
 
 
 REQUIRED_COLUMNS = {"x", "y", "z"}
@@ -42,6 +43,9 @@ def parse_uploaded_points(uploaded_bytes):
             x_val = float((key_map.get("x") or "").strip())
             y_val = float((key_map.get("y") or "").strip())
             z_val = float((key_map.get("z") or "").strip())
+
+            if not all(math.isfinite(val) for val in (x_val, y_val, z_val)):
+                raise ValueError("non-finite coordinate")
         except (KeyError, TypeError, ValueError) as exc:
             raise ValueError(f"Invalid numeric values at row {row_count}") from exc
 
