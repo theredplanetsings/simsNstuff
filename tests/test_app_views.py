@@ -1,6 +1,6 @@
 import unittest
 
-from app_views import build_points_csv
+from app_views import build_points_csv, format_point_group_summary
 
 
 class BuildPointsCsvTests(unittest.TestCase):
@@ -37,6 +37,16 @@ class BuildPointsCsvTests(unittest.TestCase):
         lines = csv_text.strip().splitlines()
 
         self.assertEqual(lines[1], '"Mine, Sector A",1.000000,2.000000,3.000000,m')
+
+
+class FormatPointGroupSummaryTests(unittest.TestCase):
+    def test_format_point_group_summary_handles_singular(self):
+        summary = format_point_group_summary(total_points=1, group_count=1)
+        self.assertEqual(summary, "Loaded 1 point across 1 label group.")
+
+    def test_format_point_group_summary_handles_plural(self):
+        summary = format_point_group_summary(total_points=12, group_count=3)
+        self.assertEqual(summary, "Loaded 12 points across 3 label groups.")
 
 
 if __name__ == "__main__":

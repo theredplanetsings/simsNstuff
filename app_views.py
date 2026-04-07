@@ -96,6 +96,12 @@ def build_points_csv(points_by_label, unit_label):
     return output.getvalue()
 
 
+def format_point_group_summary(total_points, group_count):
+    point_label = "point" if total_points == 1 else "points"
+    group_label = "label group" if group_count == 1 else "label groups"
+    return f"Loaded {total_points} {point_label} across {group_count} {group_label}."
+
+
 def render_view_header(title, subtitle):
     st.header(title)
     st.caption(subtitle)
@@ -444,7 +450,12 @@ def render_real_data_view():
                 camera_eye=(1.4, 1.4, 1.1),
             )
 
-            st.success(f"Loaded {sum(len(v) for v in grouped_points.values())} points across {len(grouped_points)} label group(s).")
+            st.success(
+                format_point_group_summary(
+                    total_points=sum(len(v) for v in grouped_points.values()),
+                    group_count=len(grouped_points),
+                )
+            )
             st.plotly_chart(fig_uploaded, use_container_width=True)
         except ValueError as exc:
             st.error(f"CSV validation error: {exc}")
