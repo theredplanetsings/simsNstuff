@@ -16,8 +16,13 @@ def parse_uploaded_points(uploaded_bytes):
     - Required: x, y, z
     - Optional: label (defaults to "Uploaded")
     """
+    if not isinstance(uploaded_bytes, (bytes, bytearray, memoryview)):
+        raise TypeError("uploaded_bytes must be bytes-like.")
+
+    payload = bytes(uploaded_bytes)
+
     try:
-        text = uploaded_bytes.decode("utf-8")
+        text = payload.decode("utf-8")
     except UnicodeDecodeError as exc:
         raise ValueError("CSV must be UTF-8 encoded.") from exc
 

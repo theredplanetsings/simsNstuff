@@ -51,6 +51,17 @@ class TestCsvOverlay(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "CSV must be UTF-8 encoded"):
             parse_uploaded_points(payload)
 
+    def test_parse_uploaded_points_rejects_non_bytes_payload(self):
+        with self.assertRaisesRegex(TypeError, "uploaded_bytes must be bytes-like"):
+            parse_uploaded_points("x,y,z\n1,2,3\n")
+
+    def test_parse_uploaded_points_accepts_bytearray_payload(self):
+        payload = bytearray("x,y,z\n1,2,3\n", "utf-8")
+
+        parsed = parse_uploaded_points(payload)
+
+        self.assertEqual(parsed, {"Uploaded": [(1.0, 2.0, 3.0)]})
+
     def test_parse_uploaded_points_rejects_header_only_csv(self):
         payload = "x,y,z\n".encode("utf-8")
 
