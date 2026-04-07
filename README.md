@@ -79,6 +79,25 @@ From the project root, run:
 python -m unittest discover -s tests -p "test_*.py"
 ```
 
+### Developer Workflow
+Recommended local quality checks before opening a PR:
+
+1. Install dependencies:
+```
+pip install -r requirements.txt
+```
+
+2. Run tests:
+```
+python -m unittest discover -s tests -p "test_*.py"
+```
+
+3. Lint and format checks (if Ruff is installed):
+```
+ruff check .
+ruff format --check .
+```
+
 ### Mineral Deposit Modelling Modes
 Advanced geological modelling styles for mineral deposits:
 
