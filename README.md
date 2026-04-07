@@ -51,6 +51,14 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 
 ## Changelog
 
+### 2026-04-06
+- Hardened CSV upload parsing to reject non-finite coordinates (`NaN`/`Inf`) and validate bytes-like input payloads.
+- Expanded CSV parser contract tests for whitespace-heavy headers, blank rows, extra columns, and payload type handling.
+- Added broader generator validation coverage for boolean and non-finite seed/count/efficiency edge cases.
+- Made CSV export output deterministic by sorting label groups before writing rows.
+- Extracted uploaded-point success-message formatting into a reusable helper with dedicated tests.
+- Expanded CI test coverage to run unit tests on both Python 3.10 and 3.11.
+
 ### 2026-04-05
 - Hardened seed and numeric validation paths in generator logic with clearer error handling.
 - Expanded edge-case unit coverage for generators, CSV parsing, and CSV export formatting.
