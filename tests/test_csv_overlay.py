@@ -77,6 +77,19 @@ class TestCsvOverlay(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Invalid numeric values at row 1"):
             parse_uploaded_points(payload)
 
+    def test_parse_uploaded_points_ignores_unrelated_columns(self):
+        payload = "x,y,z,label,notes\n1,2,3,Mine A,priority\n".encode("utf-8")
+
+        parsed = parse_uploaded_points(payload)
+
+        self.assertEqual(parsed, {"Mine A": [(1.0, 2.0, 3.0)]})
+
+    def test_parse_uploaded_points_rejects_whitespace_only_rows(self):
+        payload = "x,y,z\n , , \n".encode("utf-8")
+
+        with self.assertRaisesRegex(ValueError, "CSV contains no valid coordinate rows"):
+            parse_uploaded_points(payload)
+
 
 if __name__ == "__main__":
     unittest.main()
