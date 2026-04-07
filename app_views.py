@@ -58,13 +58,38 @@ def _build_line_figure(years, values, name, line_color, title, yaxis_title):
     return fig
 
 
+def _apply_3d_layout(
+    fig,
+    *,
+    title,
+    xaxis_title,
+    yaxis_title,
+    zaxis_title,
+    height,
+    camera_eye=(1.5, 1.5, 1.2),
+):
+    fig.update_layout(
+        title=title,
+        template=CHART_TEMPLATE,
+        scene=dict(
+            xaxis_title=xaxis_title,
+            yaxis_title=yaxis_title,
+            zaxis_title=zaxis_title,
+            camera=dict(eye=dict(x=camera_eye[0], y=camera_eye[1], z=camera_eye[2])),
+        ),
+        margin=dict(l=0, r=0, b=0, t=40),
+        height=height,
+    )
+
+
 def build_points_csv(points_by_label, unit_label):
     """Convert grouped 3D points into CSV text for download."""
     output = io.StringIO()
     writer = csv.writer(output)
     writer.writerow(["deposit_type", "x", "y", "z", "z_unit"])
 
-    for label, coords in points_by_label.items():
+    for label in sorted(points_by_label):
+        coords = points_by_label[label]
         for x, y, z in coords:
             writer.writerow([label, f"{x:.6f}", f"{y:.6f}", f"{z:.6f}", unit_label])
 
@@ -146,19 +171,15 @@ def render_mineral_view():
             )
         )
 
-    fig_minerals.update_layout(
+    _apply_3d_layout(
+        fig_minerals,
         title=f"3D Mineral Deposit Model - {modeling_mode}",
-        template=CHART_TEMPLATE,
-        scene=dict(
-            xaxis_title="Easting (km)",
-            yaxis_title="Northing (km)",
-            zaxis_title="Elevation (m)",
-            camera=dict(eye=dict(x=1.5, y=1.5, z=1.2)),
-        ),
-        legend_title_text="Minerals",
-        margin=dict(l=0, r=0, b=0, t=40),
+        xaxis_title="Easting (km)",
+        yaxis_title="Northing (km)",
+        zaxis_title="Elevation (m)",
         height=600,
     )
+    fig_minerals.update_layout(legend_title_text="Minerals")
 
     st.plotly_chart(fig_minerals, use_container_width=True)
 
@@ -236,19 +257,15 @@ def render_petroleum_view():
                 )
             )
 
-    fig_petroleum.update_layout(
+    _apply_3d_layout(
+        fig_petroleum,
         title="3D Petroleum Deposit Model - Sedimentary Basin",
-        template=CHART_TEMPLATE,
-        scene=dict(
-            xaxis_title="Easting (km)",
-            yaxis_title="Northing (km)",
-            zaxis_title="Depth (m)",
-            camera=dict(eye=dict(x=1.5, y=1.5, z=1.2)),
-        ),
-        legend_title_text="Petroleum Deposits",
-        margin=dict(l=0, r=0, b=0, t=40),
+        xaxis_title="Easting (km)",
+        yaxis_title="Northing (km)",
+        zaxis_title="Depth (m)",
         height=600,
     )
+    fig_petroleum.update_layout(legend_title_text="Petroleum Deposits")
 
     st.plotly_chart(fig_petroleum, use_container_width=True)
 
@@ -417,16 +434,14 @@ def render_real_data_view():
                     )
                 )
 
-            fig_uploaded.update_layout(
+            _apply_3d_layout(
+                fig_uploaded,
                 title="Uploaded Mine/Well Coordinates (3D)",
-                template=CHART_TEMPLATE,
-                scene=dict(
-                    xaxis_title="X",
-                    yaxis_title="Y",
-                    zaxis_title="Z",
-                    camera=dict(eye=dict(x=1.4, y=1.4, z=1.1)),
-                ),
+                xaxis_title="X",
+                yaxis_title="Y",
+                zaxis_title="Z",
                 height=560,
+                camera_eye=(1.4, 1.4, 1.1),
             )
 
             st.success(f"Loaded {sum(len(v) for v in grouped_points.values())} points across {len(grouped_points)} label group(s).")

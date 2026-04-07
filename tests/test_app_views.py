@@ -25,6 +25,19 @@ class BuildPointsCsvTests(unittest.TestCase):
 
         self.assertEqual(lines, ["deposit_type,x,y,z,z_unit"])
 
+    def test_build_points_csv_orders_labels_stably(self):
+        csv_text = build_points_csv({"Well B": [(4, 5, 6)], "Mine A": [(1, 2, 3)]}, "m")
+        lines = csv_text.strip().splitlines()
+
+        self.assertEqual(lines[1], "Mine A,1.000000,2.000000,3.000000,m")
+        self.assertEqual(lines[2], "Well B,4.000000,5.000000,6.000000,m")
+
+    def test_build_points_csv_quotes_labels_with_commas(self):
+        csv_text = build_points_csv({"Mine, Sector A": [(1, 2, 3)]}, "m")
+        lines = csv_text.strip().splitlines()
+
+        self.assertEqual(lines[1], '"Mine, Sector A",1.000000,2.000000,3.000000,m')
+
 
 if __name__ == "__main__":
     unittest.main()
