@@ -60,15 +60,27 @@ def _validate_trap_efficiency(trap_efficiency):
         raise ValueError("trap_efficiency must be between 0 and 1.")
 
 
+def _validate_non_negative_real(value, name):
+    if isinstance(value, (bool, np.bool_)):
+        raise TypeError(f"{name} must be a real number.")
+    if not isinstance(value, (int, float, np.integer, np.floating)):
+        raise TypeError(f"{name} must be a real number.")
+    if not np.isfinite(value):
+        raise ValueError(f"{name} must be finite.")
+    if value < 0:
+        raise ValueError(f"{name} must be greater than or equal to 0.")
+
+
 def _empty_coords():
     return np.zeros((0, 3))
 
 
-def generate_realistic_deposits(mineral, mode, n_deposits, seed, depth_factor, complexity):
+def generate_realistic_deposits(mineral, mode, n_deposits, seed, depth_factor, complexity, noise_scale=0.0):
     """Generate geologically realistic mineral deposits."""
     _validate_non_negative_int(n_deposits, "n_deposits")
     _validate_positive_int(complexity, "complexity")
     _validate_depth_factor(depth_factor)
+    _validate_non_negative_real(noise_scale, "noise_scale")
 
     if n_deposits == 0:
         return _empty_coords()
@@ -197,14 +209,17 @@ def generate_realistic_deposits(mineral, mode, n_deposits, seed, depth_factor, c
         coords = np.array(coords)
 
     coords[:, 2] *= depth_factor
+    if noise_scale > 0:
+        coords = coords + rng.normal(0, noise_scale, size=coords.shape)
     return coords
 
 
-def generate_petroleum_deposits(deposit_type, basin_size, reservoir_count, trap_efficiency, seed):
+def generate_petroleum_deposits(deposit_type, basin_size, reservoir_count, trap_efficiency, seed, noise_scale=0.0):
     """Generate realistic petroleum deposits."""
     _validate_positive_int(basin_size, "basin_size")
     _validate_non_negative_int(reservoir_count, "reservoir_count")
     _validate_trap_efficiency(trap_efficiency)
+    _validate_non_negative_real(noise_scale, "noise_scale")
 
     if reservoir_count == 0 or trap_efficiency == 0:
         return _empty_coords()
@@ -272,4 +287,7 @@ def generate_petroleum_deposits(deposit_type, basin_size, reservoir_count, trap_
         if len(coords) > 0:
             reservoir_blocks.append(coords)
 
-    return np.vstack(reservoir_blocks) if reservoir_blocks else _empty_coords()
+    output = np.vstack(reservoir_blocks) if reservoir_blocks else _empty_coords()
+    if noise_scale > 0 and len(output) > 0:
+        output = output + rng.normal(0, noise_scale, size=output.shape)
+    return output

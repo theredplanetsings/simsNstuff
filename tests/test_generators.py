@@ -67,6 +67,15 @@ class GeneratorContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "depth_factor must be finite"):
             generate_realistic_deposits("Copper", "Orebody systems", 10, 11, np.nan, 4)
 
+    def test_mineral_generation_rejects_negative_noise_scale(self):
+        with self.assertRaisesRegex(ValueError, "noise_scale must be greater than or equal to 0"):
+            generate_realistic_deposits("Copper", "Orebody systems", 10, 11, 1.2, 4, noise_scale=-0.1)
+
+    def test_mineral_generation_noise_is_deterministic_for_seed(self):
+        first = generate_realistic_deposits("Gold", "Orebody systems", 40, 42, 1.0, 3, noise_scale=0.8)
+        second = generate_realistic_deposits("Gold", "Orebody systems", 40, 42, 1.0, 3, noise_scale=0.8)
+        self.assertTrue(np.array_equal(first, second))
+
     def test_petroleum_generation_is_deterministic(self):
         first = generate_petroleum_deposits("Oil", 50, 4, 0.6, 42)
         second = generate_petroleum_deposits("Oil", 50, 4, 0.6, 42)
@@ -106,6 +115,10 @@ class GeneratorContractTests(unittest.TestCase):
     def test_petroleum_generation_rejects_non_finite_trap_efficiency(self):
         with self.assertRaisesRegex(ValueError, "trap_efficiency must be finite"):
             generate_petroleum_deposits("Oil", 50, 1, np.inf, 42)
+
+    def test_petroleum_generation_rejects_negative_noise_scale(self):
+        with self.assertRaisesRegex(ValueError, "noise_scale must be greater than or equal to 0"):
+            generate_petroleum_deposits("Oil", 50, 1, 0.6, 42, noise_scale=-1)
 
 
 if __name__ == "__main__":

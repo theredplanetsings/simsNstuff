@@ -307,11 +307,25 @@ def render_mineral_view():
         1,
         help="Controls branching, layering, and scatter.",
     )
+    mineral_noise = st.sidebar.slider(
+        "Uncertainty noise",
+        0.0,
+        5.0,
+        0.0,
+        0.1,
+        help="Adds random perturbation to synthetic coordinates.",
+    )
 
     deposits = {}
     for mineral in selected_minerals:
         deposits[mineral] = generate_realistic_deposits(
-            mineral, modeling_mode, n_deposits, random_seed, depth_factor, structural_complexity
+            mineral,
+            modeling_mode,
+            n_deposits,
+            random_seed,
+            depth_factor,
+            structural_complexity,
+            noise_scale=mineral_noise,
         )
 
     fig_minerals = go.Figure()
@@ -384,6 +398,7 @@ def render_mineral_view():
                 "random_seed": int(random_seed),
                 "depth_factor": depth_factor,
                 "structural_complexity": structural_complexity,
+                "uncertainty_noise": mineral_noise,
             },
         ),
         file_name="mineral_metadata.json",
@@ -438,6 +453,15 @@ def render_petroleum_view():
         0.1,
         help="Higher values concentrate more points into each trap.",
     )
+    petroleum_noise = st.sidebar.slider(
+        "Uncertainty noise",
+        0.0,
+        25.0,
+        0.0,
+        0.5,
+        key="pet_noise",
+        help="Adds random perturbation to synthetic coordinates.",
+    )
     pet_random_seed = st.sidebar.number_input(
         "Random seed",
         value=42,
@@ -449,7 +473,12 @@ def render_petroleum_view():
     petroleum_deposits = {}
     for pet_type in selected_petroleum:
         petroleum_deposits[pet_type] = generate_petroleum_deposits(
-            pet_type, basin_size, reservoir_count, trap_efficiency, pet_random_seed
+            pet_type,
+            basin_size,
+            reservoir_count,
+            trap_efficiency,
+            pet_random_seed,
+            noise_scale=petroleum_noise,
         )
 
     fig_petroleum = go.Figure()
@@ -523,6 +552,7 @@ def render_petroleum_view():
                 "reservoir_count": reservoir_count,
                 "trap_efficiency": trap_efficiency,
                 "random_seed": int(pet_random_seed),
+                "uncertainty_noise": petroleum_noise,
             },
         ),
         file_name="petroleum_metadata.json",
