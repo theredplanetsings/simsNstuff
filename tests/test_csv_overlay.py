@@ -108,6 +108,31 @@ class TestCsvOverlay(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "CSV contains no valid coordinate rows"):
             parse_uploaded_points(payload)
 
+    def test_parse_uploaded_points_applies_coordinate_bounds(self):
+        payload = "x,y,z\n1,2,3\n".encode("utf-8")
+
+        parsed = parse_uploaded_points(payload, coordinate_bounds=(-10, 10))
+
+        self.assertEqual(parsed, {"Uploaded": [(1.0, 2.0, 3.0)]})
+
+    def test_parse_uploaded_points_rejects_out_of_bounds_coordinate(self):
+        payload = "x,y,z\n99999,2,3\n".encode("utf-8")
+
+        with self.assertRaisesRegex(ValueError, "Invalid numeric values at row 1"):
+            parse_uploaded_points(payload, coordinate_bounds=(-10, 10))
+
+    def test_parse_uploaded_points_rejects_bad_coordinate_bounds_shape(self):
+        payload = "x,y,z\n1,2,3\n".encode("utf-8")
+
+        with self.assertRaisesRegex(TypeError, r"coordinate_bounds must be a \(min_value, max_value\) tuple"):
+            parse_uploaded_points(payload, coordinate_bounds=[-10, 10])
+
+    def test_parse_uploaded_points_rejects_inverted_coordinate_bounds(self):
+        payload = "x,y,z\n1,2,3\n".encode("utf-8")
+
+        with self.assertRaisesRegex(ValueError, "coordinate_bounds min_value must be less than max_value"):
+            parse_uploaded_points(payload, coordinate_bounds=(5, 1))
+
 
 if __name__ == "__main__":
     unittest.main()

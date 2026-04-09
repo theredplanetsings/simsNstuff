@@ -14,7 +14,7 @@ def build_uploaded_points_template():
     return "x,y,z,label\n0,0,-100,Example Site\n10,5,-120,Example Site\n"
 
 
-def parse_uploaded_points(uploaded_bytes):
+def parse_uploaded_points(uploaded_bytes, coordinate_bounds=None):
     """Parse uploaded CSV bytes into grouped points by label.
 
     Expected columns:
@@ -40,6 +40,8 @@ def parse_uploaded_points(uploaded_bytes):
     if not REQUIRED_COLUMNS.issubset(normalized):
         raise ValueError("CSV must include columns: x, y, z")
 
+    bounds = _normalize_coordinate_bounds(coordinate_bounds)
+
     groups = {}
     row_count = 0
     for row in reader:
@@ -56,6 +58,7 @@ def parse_uploaded_points(uploaded_bytes):
 
             if not all(math.isfinite(val) for val in (x_val, y_val, z_val)):
                 raise ValueError("non-finite coordinate")
+            _validate_coordinate_bounds(x_val, y_val, z_val, bounds)
         except (KeyError, TypeError, ValueError) as exc:
             raise ValueError(f"Invalid numeric values at row {row_count}") from exc
 
@@ -69,3 +72,34 @@ def parse_uploaded_points(uploaded_bytes):
         raise ValueError("CSV contains no valid coordinate rows.")
 
     return groups
+
+
+def _normalize_coordinate_bounds(coordinate_bounds):
+    if coordinate_bounds is None:
+        return None
+
+    if not isinstance(coordinate_bounds, tuple) or len(coordinate_bounds) != 2:
+        raise TypeError("coordinate_bounds must be a (min_value, max_value) tuple.")
+
+    min_value, max_value = coordinate_bounds
+    if not isinstance(min_value, (int, float)) or not isinstance(max_value, (int, float)):
+        raise TypeError("coordinate_bounds values must be numeric.")
+    if not (math.isfinite(min_value) and math.isfinite(max_value)):
+        raise ValueError("coordinate_bounds values must be finite.")
+    if min_value >= max_value:
+        raise ValueError("coordinate_bounds min_value must be less than max_value.")
+
+    return float(min_value), float(max_value)
+
+
+def _validate_coordinate_bounds(x_val, y_val, z_val, bounds):
+    if bounds is None:
+        return
+
+    min_value, max_value = bounds
+    if not (min_value <= x_val <= max_value):
+        raise ValueError("x out of bounds")
+    if not (min_value <= y_val <= max_value):
+        raise ValueError("y out of bounds")
+    if not (min_value <= z_val <= max_value):
+        raise ValueError("z out of bounds")

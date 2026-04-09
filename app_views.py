@@ -26,6 +26,7 @@ PETROLEUM = {
 }
 
 CHART_TEMPLATE = "plotly_white"
+UPLOAD_COORDINATE_BOUNDS = (-10000.0, 10000.0)
 
 MINERAL_PRESETS = {
     "Custom": None,
@@ -517,7 +518,9 @@ def render_real_data_view():
 
     if uploaded_file is not None:
         try:
-            grouped_points = parse_uploaded_points(uploaded_file.getvalue())
+            grouped_points = parse_uploaded_points(
+                uploaded_file.getvalue(), coordinate_bounds=UPLOAD_COORDINATE_BOUNDS
+            )
 
             fig_uploaded = go.Figure()
             palette = [
