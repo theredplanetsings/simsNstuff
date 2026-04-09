@@ -4,7 +4,7 @@ import io
 import plotly.graph_objects as go
 import streamlit as st
 
-from csv_overlay import build_uploaded_points_template, parse_uploaded_points
+from csv_overlay import build_uploaded_points_template, downsample_grouped_points, parse_uploaded_points
 from generators import generate_petroleum_deposits, generate_realistic_deposits
 from real_data import format_production_summary, get_sample_production_data
 from usgs_data import format_usgs_summary, get_sample_usgs_mineral_data
@@ -516,11 +516,38 @@ def render_real_data_view():
         help="Upload a UTF-8 CSV with x, y, z columns; label is optional.",
     )
 
+    downsample_enabled = st.checkbox(
+        "Downsample large uploads",
+        value=True,
+        help="Keeps rendering responsive for very large uploaded datasets.",
+    )
+    max_uploaded_points = st.slider(
+        "Max uploaded points to plot",
+        100,
+        10000,
+        3000,
+        100,
+        help="If the uploaded dataset exceeds this limit, a deterministic sample is plotted.",
+    )
+    downsample_seed = st.number_input(
+        "Downsample seed",
+        value=42,
+        step=1,
+        help="Use the same seed to keep the sampled subset stable.",
+    )
+
     if uploaded_file is not None:
         try:
             grouped_points = parse_uploaded_points(
                 uploaded_file.getvalue(), coordinate_bounds=UPLOAD_COORDINATE_BOUNDS
             )
+            original_total = sum(len(v) for v in grouped_points.values())
+
+            if downsample_enabled:
+                grouped_points = downsample_grouped_points(
+                    grouped_points, max_points=max_uploaded_points, seed=int(downsample_seed)
+                )
+            displayed_total = sum(len(v) for v in grouped_points.values())
 
             fig_uploaded = go.Figure()
             palette = [
@@ -565,10 +592,12 @@ def render_real_data_view():
 
             st.success(
                 format_point_group_summary(
-                    total_points=sum(len(v) for v in grouped_points.values()),
+                    total_points=displayed_total,
                     group_count=len(grouped_points),
                 )
             )
+            if displayed_total < original_total:
+                st.caption(f"Showing a deterministic subset: {displayed_total} of {original_total} uploaded points.")
             st.plotly_chart(fig_uploaded, use_container_width=True)
         except ValueError as exc:
             st.error(f"CSV validation error: {exc}")

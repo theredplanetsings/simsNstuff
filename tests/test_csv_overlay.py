@@ -1,6 +1,6 @@
 import unittest
 
-from csv_overlay import build_uploaded_points_template, parse_uploaded_points
+from csv_overlay import build_uploaded_points_template, downsample_grouped_points, parse_uploaded_points
 
 
 class TestCsvOverlay(unittest.TestCase):
@@ -132,6 +132,36 @@ class TestCsvOverlay(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "coordinate_bounds min_value must be less than max_value"):
             parse_uploaded_points(payload, coordinate_bounds=(5, 1))
+
+    def test_downsample_grouped_points_keeps_total_under_limit(self):
+        groups = {
+            "A": [(float(i), 0.0, 0.0) for i in range(20)],
+            "B": [(float(i), 1.0, 1.0) for i in range(20)],
+        }
+
+        sampled = downsample_grouped_points(groups, max_points=10, seed=42)
+        total = sum(len(v) for v in sampled.values())
+
+        self.assertEqual(total, 10)
+
+    def test_downsample_grouped_points_is_deterministic(self):
+        groups = {"A": [(float(i), 0.0, 0.0) for i in range(50)]}
+
+        first = downsample_grouped_points(groups, max_points=12, seed=42)
+        second = downsample_grouped_points(groups, max_points=12, seed=42)
+
+        self.assertEqual(first, second)
+
+    def test_downsample_grouped_points_passthrough_when_under_limit(self):
+        groups = {"A": [(1.0, 2.0, 3.0)]}
+
+        sampled = downsample_grouped_points(groups, max_points=10, seed=42)
+
+        self.assertEqual(sampled, groups)
+
+    def test_downsample_grouped_points_rejects_non_positive_max(self):
+        with self.assertRaisesRegex(ValueError, "max_points must be greater than 0"):
+            downsample_grouped_points({"A": [(1.0, 2.0, 3.0)]}, max_points=0, seed=42)
 
 
 if __name__ == "__main__":

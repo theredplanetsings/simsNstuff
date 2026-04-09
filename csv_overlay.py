@@ -4,6 +4,8 @@ import csv
 import io
 import math
 
+import numpy as np
+
 
 REQUIRED_COLUMNS = {"x", "y", "z"}
 OPTIONAL_COLUMNS = {"label"}
@@ -12,6 +14,38 @@ OPTIONAL_COLUMNS = {"label"}
 def build_uploaded_points_template():
     """Return a small CSV template for mine/well coordinate uploads."""
     return "x,y,z,label\n0,0,-100,Example Site\n10,5,-120,Example Site\n"
+
+
+def downsample_grouped_points(groups, max_points, seed):
+    """Deterministically downsample grouped points to an overall max count."""
+    if not isinstance(groups, dict):
+        raise TypeError("groups must be a dictionary of label -> point list.")
+    if not isinstance(max_points, int) or isinstance(max_points, bool):
+        raise TypeError("max_points must be an integer.")
+    if max_points <= 0:
+        raise ValueError("max_points must be greater than 0.")
+
+    total_points = sum(len(points) for points in groups.values())
+    if total_points <= max_points:
+        return {label: list(points) for label, points in groups.items()}
+
+    if not isinstance(seed, int) or isinstance(seed, bool):
+        raise TypeError("seed must be an integer.")
+
+    rng = np.random.default_rng(seed)
+    sampled = {label: [] for label in groups}
+
+    all_points = []
+    for label in sorted(groups):
+        all_points.extend((label, point) for point in groups[label])
+
+    indices = np.arange(len(all_points))
+    keep = rng.choice(indices, size=max_points, replace=False)
+    for idx in np.sort(keep):
+        label, point = all_points[idx]
+        sampled[label].append(point)
+
+    return {label: points for label, points in sampled.items() if points}
 
 
 def parse_uploaded_points(uploaded_bytes, coordinate_bounds=None):
