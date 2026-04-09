@@ -225,6 +225,16 @@ def build_metadata_json(view_name, parameters):
     return json.dumps(payload, indent=2, sort_keys=True)
 
 
+@st.cache_data(show_spinner=False)
+def _get_cached_production_data():
+    return get_sample_production_data()
+
+
+@st.cache_data(show_spinner=False)
+def _get_cached_usgs_data():
+    return get_sample_usgs_mineral_data()
+
+
 def render_view_header(title, subtitle):
     st.header(title)
     st.caption(subtitle)
@@ -576,7 +586,7 @@ def render_real_data_view():
         st.markdown(format_production_summary())
 
         with st.expander("Production Trends Chart"):
-            data = get_sample_production_data()
+            data = _get_cached_production_data()
 
             coal_years, coal_values = zip(*data["coal_production"])
             fig_coal = _build_line_figure(
@@ -621,7 +631,7 @@ def render_real_data_view():
         )
     else:
         st.markdown(format_usgs_summary())
-        usgs_data = get_sample_usgs_mineral_data()
+        usgs_data = _get_cached_usgs_data()
 
         minerals_latest = []
         for mineral_name, series in usgs_data.items():
