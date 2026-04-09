@@ -1,6 +1,6 @@
 import unittest
 
-from app_views import build_points_csv, format_point_group_summary, _resolve_preset
+from app_views import build_points_csv, format_point_group_summary, summarize_point_groups, _resolve_preset
 
 
 class BuildPointsCsvTests(unittest.TestCase):
@@ -61,6 +61,22 @@ class ResolvePresetTests(unittest.TestCase):
     def test_resolve_preset_returns_empty_dict_for_unknown(self):
         presets = {"Custom": None}
         self.assertEqual(_resolve_preset("Unknown", presets), {})
+
+
+class SummarizePointGroupsTests(unittest.TestCase):
+    def test_summarize_point_groups_builds_expected_metrics(self):
+        summaries = summarize_point_groups({"Mine A": [(0.0, 1.0, -10.0), (2.0, 3.0, -6.0)]})
+
+        self.assertEqual(len(summaries), 1)
+        self.assertEqual(summaries[0]["Label"], "Mine A")
+        self.assertEqual(summaries[0]["Count"], 2)
+        self.assertEqual(summaries[0]["Min Z"], -10.0)
+        self.assertEqual(summaries[0]["Max Z"], -6.0)
+        self.assertEqual(summaries[0]["Mean Z"], -8.0)
+
+    def test_summarize_point_groups_ignores_empty_groups(self):
+        summaries = summarize_point_groups({"Mine A": []})
+        self.assertEqual(summaries, [])
 
 
 if __name__ == "__main__":

@@ -149,6 +149,33 @@ def format_point_group_summary(total_points, group_count):
     return f"Loaded {total_points} {point_label} across {group_count} {group_label}."
 
 
+def summarize_point_groups(points_by_label):
+    summaries = []
+    for label in sorted(points_by_label):
+        coords = points_by_label[label]
+        if len(coords) == 0:
+            continue
+
+        xs = [row[0] for row in coords]
+        ys = [row[1] for row in coords]
+        zs = [row[2] for row in coords]
+
+        count = len(coords)
+        summaries.append(
+            {
+                "Label": label,
+                "Count": count,
+                "Min Z": round(min(zs), 2),
+                "Max Z": round(max(zs), 2),
+                "Mean Z": round(sum(zs) / count, 2),
+                "Centroid X": round(sum(xs) / count, 2),
+                "Centroid Y": round(sum(ys) / count, 2),
+                "Centroid Z": round(sum(zs) / count, 2),
+            }
+        )
+    return summaries
+
+
 def render_view_header(title, subtitle):
     st.header(title)
     st.caption(subtitle)
@@ -264,6 +291,8 @@ def render_mineral_view():
     fig_minerals.update_layout(legend_title_text="Minerals")
 
     st.plotly_chart(fig_minerals, use_container_width=True)
+    st.markdown("### Deposit Summary")
+    st.table(summarize_point_groups({k: v.tolist() for k, v in deposits.items()}))
 
     st.markdown("### Geological Context")
     if modeling_mode == "Orebody systems":
@@ -379,6 +408,8 @@ def render_petroleum_view():
     fig_petroleum.update_layout(legend_title_text="Petroleum Deposits")
 
     st.plotly_chart(fig_petroleum, use_container_width=True)
+    st.markdown("### Reservoir Summary")
+    st.table(summarize_point_groups({k: v.tolist() for k, v in petroleum_deposits.items()}))
 
     st.markdown("### Petroleum Geology")
     st.info(
@@ -599,5 +630,7 @@ def render_real_data_view():
             if displayed_total < original_total:
                 st.caption(f"Showing a deterministic subset: {displayed_total} of {original_total} uploaded points.")
             st.plotly_chart(fig_uploaded, use_container_width=True)
+            st.markdown("### Uploaded Data Summary")
+            st.table(summarize_point_groups(grouped_points))
         except ValueError as exc:
             st.error(f"CSV validation error: {exc}")
