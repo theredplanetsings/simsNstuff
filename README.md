@@ -45,11 +45,27 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 - **Interactive 3D Visualisation:** Plotly-powered 3D scatter plots with hover information
 - **Conditional Sidebar Controls:** Only relevant parameters show based on selected deposit type
 - **Realistic Geological Modelling:** Based on actual geological principles and formations
+- **Scenario Presets:** Quickly load representative mineral and petroleum modelling setups
 - **Colour-coded Deposits:** Easy identification of different mineral and petroleum types
+- **Cross-Section Analysis:** Inspect X-Z and Y-Z slices for mineral and petroleum outputs
+- **Data Summaries:** Review per-label counts, centroids, and depth statistics in table form
 - **Click-only Controls:** Radio buttons prevent accidental text input
-- **Export Ready:** Download generated mineral and petroleum point clouds as CSV files
+- **Export Ready:** Download generated point clouds as CSV and simulation metadata as JSON
+- **Upload Toolkit:** Includes CSV template download, coordinate bound checks, and deterministic downsampling for large uploads
 
 ## Changelog
+
+### 2026-04-09
+- Added scenario presets for mineral and petroleum modelling to speed up exploratory analysis.
+- Added downloadable CSV upload template and improved upload onboarding in the real-data view.
+- Added coordinate bound validation and deterministic downsampling controls for uploaded datasets.
+- Added summary tables showing point counts, centroids, and Z statistics for generated and uploaded groups.
+- Added mineral/petroleum cross-section charts (X-Z and Y-Z) for 2D structural inspection.
+- Added metadata JSON exports for mineral and petroleum simulations with reproducibility parameters.
+- Added uncertainty/noise controls for synthetic generation with validation and test coverage.
+- Added Streamlit cache wrappers for static real-data sources to reduce repeated recomputation.
+- Added dedicated tests for real-data helper modules and summaries.
+- Added `Makefile` shortcuts (`make test`, `make lint`, `make format-check`) and documented them.
 
 ### 2026-04-06
 - Hardened CSV upload parsing to reject non-finite coordinates (`NaN`/`Inf`) and validate bytes-like input payloads.
