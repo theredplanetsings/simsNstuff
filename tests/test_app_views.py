@@ -1,6 +1,14 @@
 import unittest
 
-from app_views import build_points_csv, format_point_group_summary, summarize_point_groups, _resolve_preset
+import numpy as np
+
+from app_views import (
+    _build_cross_section_figure,
+    _resolve_preset,
+    build_points_csv,
+    format_point_group_summary,
+    summarize_point_groups,
+)
 
 
 class BuildPointsCsvTests(unittest.TestCase):
@@ -77,6 +85,22 @@ class SummarizePointGroupsTests(unittest.TestCase):
     def test_summarize_point_groups_ignores_empty_groups(self):
         summaries = summarize_point_groups({"Mine A": []})
         self.assertEqual(summaries, [])
+
+
+class CrossSectionFigureTests(unittest.TestCase):
+    def test_cross_section_uses_x_axis_for_xz(self):
+        points = {"A": np.array([[1.0, 2.0, -3.0]])}
+        fig = _build_cross_section_figure(points, "X-Z", "Test")
+
+        self.assertEqual(fig.layout.xaxis.title.text, "X (km)")
+        self.assertEqual(fig.layout.yaxis.title.text, "Z (m)")
+        self.assertEqual(len(fig.data), 1)
+
+    def test_cross_section_uses_y_axis_for_yz(self):
+        points = {"A": np.array([[1.0, 2.0, -3.0]])}
+        fig = _build_cross_section_figure(points, "Y-Z", "Test")
+
+        self.assertEqual(fig.layout.xaxis.title.text, "Y (km)")
 
 
 if __name__ == "__main__":

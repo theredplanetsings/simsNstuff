@@ -105,6 +105,44 @@ def _build_line_figure(years, values, name, line_color, title, yaxis_title):
     return fig
 
 
+def _build_cross_section_figure(points_by_label, axis_choice, title):
+    fig = go.Figure()
+    x_title = "X (km)"
+
+    for label in sorted(points_by_label):
+        coords = points_by_label[label]
+        if len(coords) == 0:
+            continue
+
+        if axis_choice == "X-Z":
+            x_vals = coords[:, 0]
+            z_vals = coords[:, 2]
+            x_title = "X (km)"
+        else:
+            x_vals = coords[:, 1]
+            z_vals = coords[:, 2]
+            x_title = "Y (km)"
+
+        fig.add_trace(
+            go.Scatter(
+                x=x_vals,
+                y=z_vals,
+                mode="markers",
+                name=label,
+                marker=dict(size=6, opacity=0.75),
+            )
+        )
+
+    fig.update_layout(
+        title=title,
+        template=CHART_TEMPLATE,
+        xaxis_title=x_title,
+        yaxis_title="Z (m)",
+        height=360,
+    )
+    return fig
+
+
 def _apply_3d_layout(
     fig,
     *,
@@ -291,6 +329,11 @@ def render_mineral_view():
     fig_minerals.update_layout(legend_title_text="Minerals")
 
     st.plotly_chart(fig_minerals, use_container_width=True)
+    cross_axis = st.radio("Mineral cross-section", ["X-Z", "Y-Z"], horizontal=True)
+    st.plotly_chart(
+        _build_cross_section_figure(deposits, cross_axis, f"Mineral Cross-Section ({cross_axis})"),
+        use_container_width=True,
+    )
     st.markdown("### Deposit Summary")
     st.table(summarize_point_groups({k: v.tolist() for k, v in deposits.items()}))
 
@@ -408,6 +451,13 @@ def render_petroleum_view():
     fig_petroleum.update_layout(legend_title_text="Petroleum Deposits")
 
     st.plotly_chart(fig_petroleum, use_container_width=True)
+    petroleum_axis = st.radio("Petroleum cross-section", ["X-Z", "Y-Z"], horizontal=True)
+    st.plotly_chart(
+        _build_cross_section_figure(
+            petroleum_deposits, petroleum_axis, f"Petroleum Cross-Section ({petroleum_axis})"
+        ),
+        use_container_width=True,
+    )
     st.markdown("### Reservoir Summary")
     st.table(summarize_point_groups({k: v.tolist() for k, v in petroleum_deposits.items()}))
 
