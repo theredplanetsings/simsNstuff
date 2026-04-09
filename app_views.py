@@ -1,5 +1,7 @@
 import csv
 import io
+import json
+from datetime import datetime, timezone
 
 import plotly.graph_objects as go
 import streamlit as st
@@ -214,6 +216,15 @@ def summarize_point_groups(points_by_label):
     return summaries
 
 
+def build_metadata_json(view_name, parameters):
+    payload = {
+        "view": view_name,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "parameters": parameters,
+    }
+    return json.dumps(payload, indent=2, sort_keys=True)
+
+
 def render_view_header(title, subtitle):
     st.header(title)
     st.caption(subtitle)
@@ -361,6 +372,23 @@ def render_mineral_view():
         file_name="mineral_deposits.csv",
         mime="text/csv",
     )
+    st.download_button(
+        "Download mineral metadata (JSON)",
+        data=build_metadata_json(
+            "Mineral Deposits",
+            {
+                "selected_minerals": selected_minerals,
+                "preset": mineral_preset,
+                "mode": modeling_mode,
+                "n_deposits": n_deposits,
+                "random_seed": int(random_seed),
+                "depth_factor": depth_factor,
+                "structural_complexity": structural_complexity,
+            },
+        ),
+        file_name="mineral_metadata.json",
+        mime="application/json",
+    )
 
 
 def render_petroleum_view():
@@ -483,6 +511,22 @@ def render_petroleum_view():
         data=petroleum_csv,
         file_name="petroleum_deposits.csv",
         mime="text/csv",
+    )
+    st.download_button(
+        "Download petroleum metadata (JSON)",
+        data=build_metadata_json(
+            "Petroleum Deposits",
+            {
+                "selected_petroleum": selected_petroleum,
+                "preset": petroleum_preset,
+                "basin_size": basin_size,
+                "reservoir_count": reservoir_count,
+                "trap_efficiency": trap_efficiency,
+                "random_seed": int(pet_random_seed),
+            },
+        ),
+        file_name="petroleum_metadata.json",
+        mime="application/json",
     )
 
 

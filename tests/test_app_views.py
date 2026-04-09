@@ -1,10 +1,12 @@
 import unittest
 
 import numpy as np
+import json
 
 from app_views import (
     _build_cross_section_figure,
     _resolve_preset,
+    build_metadata_json,
     build_points_csv,
     format_point_group_summary,
     summarize_point_groups,
@@ -101,6 +103,16 @@ class CrossSectionFigureTests(unittest.TestCase):
         fig = _build_cross_section_figure(points, "Y-Z", "Test")
 
         self.assertEqual(fig.layout.xaxis.title.text, "Y (km)")
+
+
+class MetadataJsonTests(unittest.TestCase):
+    def test_build_metadata_json_contains_expected_fields(self):
+        payload = build_metadata_json("Mineral Deposits", {"seed": 42})
+        data = json.loads(payload)
+
+        self.assertEqual(data["view"], "Mineral Deposits")
+        self.assertEqual(data["parameters"]["seed"], 42)
+        self.assertIn("generated_at", data)
 
 
 if __name__ == "__main__":
