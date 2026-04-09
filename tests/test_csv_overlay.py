@@ -1,9 +1,16 @@
 import unittest
 
-from csv_overlay import parse_uploaded_points
+from csv_overlay import build_uploaded_points_template, parse_uploaded_points
 
 
 class TestCsvOverlay(unittest.TestCase):
+    def test_build_uploaded_points_template_has_required_columns(self):
+        csv_text = build_uploaded_points_template()
+        lines = csv_text.strip().splitlines()
+
+        self.assertEqual(lines[0], "x,y,z,label")
+        self.assertGreaterEqual(len(lines), 2)
+
     def test_parse_uploaded_points_groups_labels(self):
         payload = (
             "x,y,z,label\n"

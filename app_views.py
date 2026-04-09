@@ -4,7 +4,7 @@ import io
 import plotly.graph_objects as go
 import streamlit as st
 
-from csv_overlay import parse_uploaded_points
+from csv_overlay import build_uploaded_points_template, parse_uploaded_points
 from generators import generate_petroleum_deposits, generate_realistic_deposits
 from real_data import format_production_summary, get_sample_production_data
 from usgs_data import format_usgs_summary, get_sample_usgs_mineral_data
@@ -502,6 +502,12 @@ def render_real_data_view():
         )
 
     st.markdown("### Upload Your Own Mine/Well Coordinates")
+    st.download_button(
+        "Download CSV template",
+        data=build_uploaded_points_template(),
+        file_name="uploaded_points_template.csv",
+        mime="text/csv",
+    )
     uploaded_file = st.file_uploader(
         "Upload CSV with columns: x, y, z, label (optional)",
         type=["csv"],

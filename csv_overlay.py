@@ -9,6 +9,11 @@ REQUIRED_COLUMNS = {"x", "y", "z"}
 OPTIONAL_COLUMNS = {"label"}
 
 
+def build_uploaded_points_template():
+    """Return a small CSV template for mine/well coordinate uploads."""
+    return "x,y,z,label\n0,0,-100,Example Site\n10,5,-120,Example Site\n"
+
+
 def parse_uploaded_points(uploaded_bytes):
     """Parse uploaded CSV bytes into grouped points by label.
 
