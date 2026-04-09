@@ -90,6 +90,13 @@ python -m unittest discover -s tests -p "test_*.py"
 ### Developer Workflow
 Recommended local quality checks before opening a PR:
 
+Shortcut commands (if `make` is available):
+```
+make test
+make lint
+make format-check
+```
+
 1. Install dependencies:
 ```
 pip install -r requirements.txt
