@@ -1,6 +1,6 @@
 import unittest
 
-from app_views import build_points_csv, format_point_group_summary
+from app_views import build_points_csv, format_point_group_summary, _resolve_preset
 
 
 class BuildPointsCsvTests(unittest.TestCase):
@@ -47,6 +47,20 @@ class FormatPointGroupSummaryTests(unittest.TestCase):
     def test_format_point_group_summary_handles_plural(self):
         summary = format_point_group_summary(total_points=12, group_count=3)
         self.assertEqual(summary, "Loaded 12 points across 3 label groups.")
+
+
+class ResolvePresetTests(unittest.TestCase):
+    def test_resolve_preset_returns_preset_values(self):
+        presets = {"Custom": None, "A": {"foo": 1}}
+        self.assertEqual(_resolve_preset("A", presets), {"foo": 1})
+
+    def test_resolve_preset_returns_empty_dict_for_custom(self):
+        presets = {"Custom": None}
+        self.assertEqual(_resolve_preset("Custom", presets), {})
+
+    def test_resolve_preset_returns_empty_dict_for_unknown(self):
+        presets = {"Custom": None}
+        self.assertEqual(_resolve_preset("Unknown", presets), {})
 
 
 if __name__ == "__main__":

@@ -27,6 +27,52 @@ PETROLEUM = {
 
 CHART_TEMPLATE = "plotly_white"
 
+MINERAL_PRESETS = {
+    "Custom": None,
+    "High-Grade Veins": {
+        "mode": "Hydrothermal veins",
+        "n_deposits": 180,
+        "depth_factor": 1.3,
+        "structural_complexity": 4,
+    },
+    "Layered Basin": {
+        "mode": "Sedimentary layers",
+        "n_deposits": 140,
+        "depth_factor": 1.0,
+        "structural_complexity": 3,
+    },
+    "Placer Field": {
+        "mode": "Placer deposits",
+        "n_deposits": 220,
+        "depth_factor": 0.8,
+        "structural_complexity": 2,
+    },
+}
+
+PETROLEUM_PRESETS = {
+    "Custom": None,
+    "Tight Traps": {
+        "basin_size": 40,
+        "reservoir_count": 5,
+        "trap_efficiency": 0.8,
+    },
+    "Broad Basin": {
+        "basin_size": 80,
+        "reservoir_count": 3,
+        "trap_efficiency": 0.6,
+    },
+    "Shallow Hydrates": {
+        "basin_size": 55,
+        "reservoir_count": 4,
+        "trap_efficiency": 0.5,
+    },
+}
+
+
+def _resolve_preset(selection, presets):
+    chosen = presets.get(selection)
+    return chosen if chosen is not None else {}
+
 
 def _render_model_assumptions(z_label, detail_line):
     with st.expander("Model assumptions and units"):
@@ -131,12 +177,20 @@ def render_mineral_view():
         st.warning("Please select at least one mineral to display the model.")
         return
 
+    st.sidebar.markdown("**Mineral Presets:**")
+    mineral_preset = st.sidebar.selectbox(
+        "Scenario preset",
+        list(MINERAL_PRESETS.keys()),
+        help="Use a preset to quickly load representative mineral modelling settings.",
+    )
+    mineral_defaults = _resolve_preset(mineral_preset, MINERAL_PRESETS)
+
     st.sidebar.markdown("**Mineral Parameters:**")
     n_deposits = st.sidebar.slider(
         "Number of deposits per mineral",
         10,
         500,
-        100,
+        mineral_defaults.get("n_deposits", 100),
         10,
         help="Higher values increase point density and rendering time.",
     )
@@ -150,11 +204,32 @@ def render_mineral_view():
     modeling_mode = st.sidebar.radio(
         "Geological modelling mode",
         ["Orebody systems", "Hydrothermal veins", "Sedimentary layers", "Contact metamorphic", "Placer deposits"],
+        index=[
+            "Orebody systems",
+            "Hydrothermal veins",
+            "Sedimentary layers",
+            "Contact metamorphic",
+            "Placer deposits",
+        ].index(mineral_defaults.get("mode", "Orebody systems")),
     )
 
     st.sidebar.markdown("**Geological Parameters:**")
-    depth_factor = st.sidebar.slider("Depth influence", 0.1, 2.0, 1.0, 0.1, help="Scales the vertical spread of the generated deposit.")
-    structural_complexity = st.sidebar.slider("Structural complexity", 1, 5, 3, 1, help="Controls branching, layering, and scatter.")
+    depth_factor = st.sidebar.slider(
+        "Depth influence",
+        0.1,
+        2.0,
+        mineral_defaults.get("depth_factor", 1.0),
+        0.1,
+        help="Scales the vertical spread of the generated deposit.",
+    )
+    structural_complexity = st.sidebar.slider(
+        "Structural complexity",
+        1,
+        5,
+        mineral_defaults.get("structural_complexity", 3),
+        1,
+        help="Controls branching, layering, and scatter.",
+    )
 
     deposits = {}
     for mineral in selected_minerals:
@@ -229,10 +304,39 @@ def render_petroleum_view():
         st.warning("Please select at least one petroleum deposit type to display the model.")
         return
 
+    st.sidebar.markdown("**Petroleum Presets:**")
+    petroleum_preset = st.sidebar.selectbox(
+        "Basin preset",
+        list(PETROLEUM_PRESETS.keys()),
+        help="Use a preset to quickly load representative petroleum basin settings.",
+    )
+    petroleum_defaults = _resolve_preset(petroleum_preset, PETROLEUM_PRESETS)
+
     st.sidebar.markdown("**Petroleum Parameters:**")
-    basin_size = st.sidebar.slider("Basin size (km)", 20, 100, 50, 10, help="Larger basins spread reservoirs across a wider area.")
-    reservoir_count = st.sidebar.slider("Number of reservoirs", 1, 8, 3, 1, help="More reservoirs add more trap clusters.")
-    trap_efficiency = st.sidebar.slider("Trap efficiency", 0.1, 1.0, 0.6, 0.1, help="Higher values concentrate more points into each trap.")
+    basin_size = st.sidebar.slider(
+        "Basin size (km)",
+        20,
+        100,
+        petroleum_defaults.get("basin_size", 50),
+        10,
+        help="Larger basins spread reservoirs across a wider area.",
+    )
+    reservoir_count = st.sidebar.slider(
+        "Number of reservoirs",
+        1,
+        8,
+        petroleum_defaults.get("reservoir_count", 3),
+        1,
+        help="More reservoirs add more trap clusters.",
+    )
+    trap_efficiency = st.sidebar.slider(
+        "Trap efficiency",
+        0.1,
+        1.0,
+        petroleum_defaults.get("trap_efficiency", 0.6),
+        0.1,
+        help="Higher values concentrate more points into each trap.",
+    )
     pet_random_seed = st.sidebar.number_input(
         "Random seed",
         value=42,
