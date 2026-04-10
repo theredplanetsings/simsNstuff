@@ -43,6 +43,8 @@ def _validate_positive_int(value, name):
 
 
 def _validate_depth_factor(depth_factor):
+    if isinstance(depth_factor, (bool, np.bool_)):
+        raise TypeError("depth_factor must be a real number.")
     if not isinstance(depth_factor, (int, float, np.integer, np.floating)):
         raise TypeError("depth_factor must be a real number.")
     if not np.isfinite(depth_factor):
@@ -52,6 +54,8 @@ def _validate_depth_factor(depth_factor):
 
 
 def _validate_trap_efficiency(trap_efficiency):
+    if isinstance(trap_efficiency, (bool, np.bool_)):
+        raise TypeError("trap_efficiency must be a real number.")
     if not isinstance(trap_efficiency, (int, float, np.integer, np.floating)):
         raise TypeError("trap_efficiency must be a real number.")
     if not np.isfinite(trap_efficiency):

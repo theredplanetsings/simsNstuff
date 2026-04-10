@@ -63,6 +63,10 @@ class GeneratorContractTests(unittest.TestCase):
         with self.assertRaisesRegex(TypeError, "depth_factor must be a real number"):
             generate_realistic_deposits("Copper", "Orebody systems", 10, 11, "deep", 4)
 
+    def test_mineral_generation_rejects_boolean_depth_factor(self):
+        with self.assertRaisesRegex(TypeError, "depth_factor must be a real number"):
+            generate_realistic_deposits("Copper", "Orebody systems", 10, 11, False, 4)
+
     def test_mineral_generation_rejects_non_finite_depth_factor(self):
         with self.assertRaisesRegex(ValueError, "depth_factor must be finite"):
             generate_realistic_deposits("Copper", "Orebody systems", 10, 11, np.nan, 4)
@@ -111,6 +115,10 @@ class GeneratorContractTests(unittest.TestCase):
     def test_petroleum_generation_rejects_non_numeric_trap_efficiency(self):
         with self.assertRaisesRegex(TypeError, "trap_efficiency must be a real number"):
             generate_petroleum_deposits("Oil", 50, 1, "high", 42)
+
+    def test_petroleum_generation_rejects_boolean_trap_efficiency(self):
+        with self.assertRaisesRegex(TypeError, "trap_efficiency must be a real number"):
+            generate_petroleum_deposits("Oil", 50, 1, True, 42)
 
     def test_petroleum_generation_rejects_non_finite_trap_efficiency(self):
         with self.assertRaisesRegex(ValueError, "trap_efficiency must be finite"):

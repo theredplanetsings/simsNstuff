@@ -133,6 +133,12 @@ class TestCsvOverlay(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "coordinate_bounds min_value must be less than max_value"):
             parse_uploaded_points(payload, coordinate_bounds=(5, 1))
 
+    def test_parse_uploaded_points_rejects_boolean_coordinate_bounds_values(self):
+        payload = "x,y,z\n1,2,3\n".encode("utf-8")
+
+        with self.assertRaisesRegex(TypeError, "coordinate_bounds values must be numeric"):
+            parse_uploaded_points(payload, coordinate_bounds=(False, 10))
+
     def test_downsample_grouped_points_keeps_total_under_limit(self):
         groups = {
             "A": [(float(i), 0.0, 0.0) for i in range(20)],
