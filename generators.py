@@ -153,6 +153,9 @@ def generate_realistic_deposits(mineral, mode, n_deposits, seed, depth_factor, c
     elif mode == "Sedimentary layers":
         n_layers = rng.integers(2, complexity + 1)
         coords = []
+        dip_direction = rng.uniform(0, 2 * np.pi)
+        dip_strength = rng.uniform(0.01, 0.08)
+        dip_vector = np.array([np.cos(dip_direction), np.sin(dip_direction)])
 
         for layer in range(n_layers):
             layer_center = rng.uniform(-40, 40, size=3)
@@ -167,7 +170,9 @@ def generate_realistic_deposits(mineral, mode, n_deposits, seed, depth_factor, c
                 r = rng.exponential(15)
                 x = layer_center[0] + r * np.cos(theta)
                 y = layer_center[1] + r * np.sin(theta)
-                z = layer_center[2] + rng.normal(0, 2)
+                lateral_offset = np.array([x - layer_center[0], y - layer_center[1]])
+                dip_offset = dip_strength * np.dot(lateral_offset, dip_vector)
+                z = layer_center[2] + dip_offset + rng.normal(0, 2)
                 coords.append([x, y, z])
 
         coords = np.array(coords)
@@ -287,6 +292,18 @@ def generate_petroleum_deposits(deposit_type, basin_size, reservoir_count, trap_
             zs = depth_base + rng.uniform(0, thickness, size=n_points)
 
             coords = np.column_stack((xs, ys, zs))
+
+        # Add a basin-wide depth trend where reservoir depth increases away from basin center.
+        radial_distance = np.hypot(coords[:, 0] - basin_center[0], coords[:, 1] - basin_center[1])
+        if deposit_type == "Oil":
+            basin_gradient = 0.6
+        elif deposit_type == "Natural Gas":
+            basin_gradient = 0.45
+        elif deposit_type == "Oil Shale":
+            basin_gradient = 0.8
+        else:  # Gas Hydrates
+            basin_gradient = 0.3
+        coords[:, 2] = coords[:, 2] - radial_distance * basin_gradient
 
         if len(coords) > 0:
             reservoir_blocks.append(coords)
