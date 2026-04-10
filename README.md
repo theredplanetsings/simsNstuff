@@ -61,6 +61,15 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 
 ## Changelog
 
+### 2026-04-10
+- Fixed local `pytest` import path discovery by adding project-level pytest configuration.
+- Hardened boolean validation for depth, trap efficiency, and coordinate-bound parsing edge cases.
+- Added downloadable CSV exports for mineral/petroleum/uploaded summary tables.
+- Improved geological realism with sedimentary dip effects and petroleum basin-edge depth gradients.
+- Added developer workflow upgrades: `requirements-dev.txt`, `make quality`, and `make run`.
+- Added uploaded overlay exports for plotted points and metadata JSON.
+- Completed release sanity checks (`pytest`, `python -m compileall`, `python -m pip check`).
+
 ### 2026-04-09
 - Added scenario presets for mineral and petroleum modelling to speed up exploratory analysis.
 - Added downloadable CSV upload template and improved upload onboarding in the real-data view.
