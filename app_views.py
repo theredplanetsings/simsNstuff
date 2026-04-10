@@ -798,5 +798,27 @@ def render_real_data_view():
                 file_name="uploaded_summary.csv",
                 mime="text/csv",
             )
+            st.download_button(
+                "Download uploaded points (CSV)",
+                data=build_points_csv({k: list(v) for k, v in grouped_points.items()}, "unitless"),
+                file_name="uploaded_points.csv",
+                mime="text/csv",
+            )
+            st.download_button(
+                "Download uploaded metadata (JSON)",
+                data=build_metadata_json(
+                    "Uploaded Overlay",
+                    {
+                        "downsample_enabled": downsample_enabled,
+                        "max_uploaded_points": max_uploaded_points,
+                        "downsample_seed": int(downsample_seed),
+                        "displayed_points": displayed_total,
+                        "original_points": original_total,
+                        "label_count": len(grouped_points),
+                    },
+                ),
+                file_name="uploaded_metadata.json",
+                mime="application/json",
+            )
         except ValueError as exc:
             st.error(f"CSV validation error: {exc}")
