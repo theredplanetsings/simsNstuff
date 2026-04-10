@@ -216,6 +216,17 @@ def summarize_point_groups(points_by_label):
     return summaries
 
 
+def build_group_summary_csv(summaries):
+    """Convert tabular summary rows into CSV text for download."""
+    output = io.StringIO()
+    fieldnames = ["Label", "Count", "Min Z", "Max Z", "Mean Z", "Centroid X", "Centroid Y", "Centroid Z"]
+    writer = csv.DictWriter(output, fieldnames=fieldnames)
+    writer.writeheader()
+    for row in summaries:
+        writer.writerow({key: row.get(key, "") for key in fieldnames})
+    return output.getvalue()
+
+
 def build_metadata_json(view_name, parameters):
     payload = {
         "view": view_name,
@@ -370,7 +381,14 @@ def render_mineral_view():
         use_container_width=True,
     )
     st.markdown("### Deposit Summary")
-    st.table(summarize_point_groups({k: v.tolist() for k, v in deposits.items()}))
+    mineral_summary = summarize_point_groups({k: v.tolist() for k, v in deposits.items()})
+    st.table(mineral_summary)
+    st.download_button(
+        "Download mineral summary (CSV)",
+        data=build_group_summary_csv(mineral_summary),
+        file_name="mineral_summary.csv",
+        mime="text/csv",
+    )
 
     st.markdown("### Geological Context")
     if modeling_mode == "Orebody systems":
@@ -526,7 +544,14 @@ def render_petroleum_view():
         use_container_width=True,
     )
     st.markdown("### Reservoir Summary")
-    st.table(summarize_point_groups({k: v.tolist() for k, v in petroleum_deposits.items()}))
+    petroleum_summary = summarize_point_groups({k: v.tolist() for k, v in petroleum_deposits.items()})
+    st.table(petroleum_summary)
+    st.download_button(
+        "Download petroleum summary (CSV)",
+        data=build_group_summary_csv(petroleum_summary),
+        file_name="petroleum_summary.csv",
+        mime="text/csv",
+    )
 
     st.markdown("### Petroleum Geology")
     st.info(
@@ -765,6 +790,13 @@ def render_real_data_view():
                 st.caption(f"Showing a deterministic subset: {displayed_total} of {original_total} uploaded points.")
             st.plotly_chart(fig_uploaded, use_container_width=True)
             st.markdown("### Uploaded Data Summary")
-            st.table(summarize_point_groups(grouped_points))
+            uploaded_summary = summarize_point_groups(grouped_points)
+            st.table(uploaded_summary)
+            st.download_button(
+                "Download uploaded summary (CSV)",
+                data=build_group_summary_csv(uploaded_summary),
+                file_name="uploaded_summary.csv",
+                mime="text/csv",
+            )
         except ValueError as exc:
             st.error(f"CSV validation error: {exc}")

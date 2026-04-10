@@ -6,6 +6,7 @@ import json
 from app_views import (
     _build_cross_section_figure,
     _resolve_preset,
+    build_group_summary_csv,
     build_metadata_json,
     build_points_csv,
     format_point_group_summary,
@@ -87,6 +88,38 @@ class SummarizePointGroupsTests(unittest.TestCase):
     def test_summarize_point_groups_ignores_empty_groups(self):
         summaries = summarize_point_groups({"Mine A": []})
         self.assertEqual(summaries, [])
+
+
+class BuildGroupSummaryCsvTests(unittest.TestCase):
+    def test_build_group_summary_csv_writes_header_and_rows(self):
+        csv_text = build_group_summary_csv(
+            [
+                {
+                    "Label": "Mine A",
+                    "Count": 2,
+                    "Min Z": -10.0,
+                    "Max Z": -6.0,
+                    "Mean Z": -8.0,
+                    "Centroid X": 1.0,
+                    "Centroid Y": 2.0,
+                    "Centroid Z": -8.0,
+                }
+            ]
+        )
+        lines = csv_text.strip().splitlines()
+
+        self.assertEqual(
+            lines[0],
+            "Label,Count,Min Z,Max Z,Mean Z,Centroid X,Centroid Y,Centroid Z",
+        )
+        self.assertEqual(lines[1], "Mine A,2,-10.0,-6.0,-8.0,1.0,2.0,-8.0")
+
+    def test_build_group_summary_csv_header_only_when_empty(self):
+        csv_text = build_group_summary_csv([])
+        self.assertEqual(
+            csv_text.strip(),
+            "Label,Count,Min Z,Max Z,Mean Z,Centroid X,Centroid Y,Centroid Z",
+        )
 
 
 class CrossSectionFigureTests(unittest.TestCase):
