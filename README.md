@@ -17,10 +17,16 @@ Streamlit webapp for visualising 3D deposits of minerals & petroleum with geolog
 ### Requirements
 - Python 3.8+
 - Packages: numpy, streamlit, plotly, scipy
+- Dev tools (recommended): pytest, ruff
 
 Install requirements (if needed):
 ```
 pip install -r requirements.txt
+```
+
+For local testing/linting tools:
+```
+pip install -r requirements-dev.txt
 ```
 
 ### Running the App Locally
@@ -100,7 +106,7 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 ### Running Tests
 From the project root, run:
 ```
-python -m unittest discover -s tests -p "test_*.py"
+python -m pytest -q
 ```
 
 ### Developer Workflow
@@ -111,6 +117,8 @@ Shortcut commands (if `make` is available):
 make test
 make lint
 make format-check
+make quality
+make run
 ```
 
 1. Install dependencies:
@@ -120,13 +128,18 @@ pip install -r requirements.txt
 
 2. Run tests:
 ```
-python -m unittest discover -s tests -p "test_*.py"
+python -m pytest -q
 ```
 
 3. Lint and format checks (if Ruff is installed):
 ```
-ruff check .
-ruff format --check .
+python -m ruff check .
+python -m ruff format --check .
+```
+
+4. Run all quality gates together:
+```
+make quality
 ```
 
 ### Mineral Deposit Modelling Modes

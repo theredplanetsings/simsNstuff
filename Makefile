@@ -1,10 +1,15 @@
-.PHONY: test lint format-check
+.PHONY: test lint format-check quality run
 
 test:
-	python -m unittest discover -s tests -p "test_*.py"
+	python -m pytest -q
 
 lint:
-	ruff check .
+	python -m ruff check .
 
 format-check:
-	ruff format --check .
+	python -m ruff format --check .
+
+quality: test lint format-check
+
+run:
+	python -m streamlit run mineral_3d_model.py
