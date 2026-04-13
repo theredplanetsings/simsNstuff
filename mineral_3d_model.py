@@ -2,6 +2,9 @@ import streamlit as st
 from app_views import render_mineral_view, render_petroleum_view, render_real_data_view, render_sidebar_intro
 
 
+st.set_page_config(page_title="Sims N Stuff", layout="wide", initial_sidebar_state="expanded")
+
+
 st.title("Sims N Stuff")
 st.markdown("Visualise realistic 3D deposits of minerals and petroleum using advanced geological modelling.")
 st.caption("Pick a view above, then use the sidebar to adjust only the controls that apply to that mode.")
@@ -14,7 +17,6 @@ deposit_type = st.radio(
     horizontal=False,
     help="Switch between synthetic geology and the real-data overlays.",
 )
-
 if deposit_type == "Real Data":
     st.caption("Real Data includes EIA trends, USGS mineral statistics, and CSV upload overlays.")
 
