@@ -1,5 +1,11 @@
 """USGS mineral commodity statistics integration helpers."""
-
+USGS_UNITS = {
+    "Gold": "tonnes",
+    "Silver": "tonnes",
+    "Iron": "million tonnes",
+    "Copper": "thousand tonnes",
+    "Coal": "million tonnes",
+}
 
 def get_sample_usgs_mineral_data():
     """Return representative USGS-style annual mineral production statistics.
@@ -45,9 +51,14 @@ def get_sample_usgs_mineral_data():
         ],
     }
 
-
-def format_usgs_summary():
+def format_usgs_summary(limit=None):
     """Build a markdown summary block for Streamlit display."""
+    if limit is not None:
+        if not isinstance(limit, int) or isinstance(limit, bool):
+            raise TypeError("limit must be an integer or None.")
+        if limit <= 0:
+            raise ValueError("limit must be greater than 0 when provided.")
+
     data = get_sample_usgs_mineral_data()
     lines = [
         "**USGS-Style Mineral Production Snapshot (2020-2024)**",
@@ -55,17 +66,13 @@ def format_usgs_summary():
         "Approximate global mine production trends for selected commodities.",
         "",
     ]
+    mineral_names = sorted(data.keys())
+    if limit is not None:
+        mineral_names = mineral_names[:limit]
 
-    units = {
-        "Gold": "tonnes",
-        "Silver": "tonnes",
-        "Iron": "million tonnes",
-        "Copper": "thousand tonnes",
-        "Coal": "million tonnes",
-    }
-
-    for mineral, series in data.items():
+    for mineral in mineral_names:
+        series = data[mineral]
         latest_year, latest_value = series[-1]
-        lines.append(f"- **{mineral} ({latest_year})**: {latest_value} {units[mineral]}")
+        lines.append(f"- **{mineral} ({latest_year})**: {latest_value} {USGS_UNITS[mineral]}")
 
     return "\n".join(lines)
