@@ -1,20 +1,15 @@
 """CSV upload parsing and validation for user-provided geological points."""
-
 import csv
 import io
 import math
-
 import numpy as np
-
 
 REQUIRED_COLUMNS = {"x", "y", "z"}
 OPTIONAL_COLUMNS = {"label"}
 
-
 def build_uploaded_points_template():
     """Return a small CSV template for mine/well coordinate uploads."""
     return "x,y,z,label\n0,0,-100,Example Site\n10,5,-120,Example Site\n"
-
 
 def downsample_grouped_points(groups, max_points, seed):
     """Deterministically downsample grouped points to an overall max count."""
@@ -47,7 +42,6 @@ def downsample_grouped_points(groups, max_points, seed):
 
     return {label: points for label, points in sampled.items() if points}
 
-
 def parse_uploaded_points(uploaded_bytes, coordinate_bounds=None):
     """Parse uploaded CSV bytes into grouped points by label.
 
@@ -70,7 +64,7 @@ def parse_uploaded_points(uploaded_bytes, coordinate_bounds=None):
     if reader.fieldnames is None:
         raise ValueError("CSV is missing a header row.")
 
-    normalized = {name.strip().lower() for name in reader.fieldnames if name}
+    normalized = _normalize_fieldnames(reader.fieldnames)
     if not REQUIRED_COLUMNS.issubset(normalized):
         raise ValueError("CSV must include columns: x, y, z")
 
@@ -107,7 +101,6 @@ def parse_uploaded_points(uploaded_bytes, coordinate_bounds=None):
 
     return groups
 
-
 def _normalize_coordinate_bounds(coordinate_bounds):
     if coordinate_bounds is None:
         return None
@@ -127,6 +120,19 @@ def _normalize_coordinate_bounds(coordinate_bounds):
 
     return float(min_value), float(max_value)
 
+def _normalize_fieldnames(fieldnames):
+    normalized = []
+    for name in fieldnames:
+        if name is None:
+            continue
+        key = name.strip().lower()
+        if key:
+            normalized.append(key)
+
+    if len(set(normalized)) != len(normalized):
+        raise ValueError("CSV contains duplicate column names.")
+
+    return set(normalized)
 
 def _validate_coordinate_bounds(x_val, y_val, z_val, bounds):
     if bounds is None:
