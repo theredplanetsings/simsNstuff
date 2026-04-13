@@ -2,15 +2,13 @@ import csv
 import io
 import json
 from datetime import datetime, timezone
-
+import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
-
 from csv_overlay import build_uploaded_points_template, downsample_grouped_points, parse_uploaded_points
 from generators import generate_petroleum_deposits, generate_realistic_deposits
 from real_data import format_production_summary, get_sample_production_data
 from usgs_data import format_usgs_summary, get_sample_usgs_mineral_data
-
 
 MINERALS = {
     "Silver": "gray",
@@ -71,18 +69,15 @@ PETROLEUM_PRESETS = {
     },
 }
 
-
 def _resolve_preset(selection, presets):
     chosen = presets.get(selection)
     return chosen if chosen is not None else {}
-
 
 def _render_model_assumptions(z_label, detail_line):
     with st.expander("Model assumptions and units"):
         st.markdown("- X and Y represent conceptual basin coordinates in kilometres.")
         st.markdown(f"- Z {z_label} in metres.")
         st.markdown(f"- {detail_line}")
-
 
 def _build_line_figure(years, values, name, line_color, title, yaxis_title):
     fig = go.Figure()
@@ -106,14 +101,13 @@ def _build_line_figure(years, values, name, line_color, title, yaxis_title):
     )
     return fig
 
-
 def _build_cross_section_figure(points_by_label, axis_choice, title):
     fig = go.Figure()
     x_title = "X (km)"
 
     for label in sorted(points_by_label):
-        coords = points_by_label[label]
-        if len(coords) == 0:
+        coords = _coerce_xyz_array(points_by_label[label])
+        if coords is None:
             continue
 
         if axis_choice == "X-Z":
@@ -144,6 +138,13 @@ def _build_cross_section_figure(points_by_label, axis_choice, title):
     )
     return fig
 
+def _coerce_xyz_array(coords):
+    array = np.asarray(coords, dtype=float)
+    if array.size == 0:
+        return None
+    if array.ndim != 2 or array.shape[1] != 3:
+        return None
+    return array
 
 def _apply_3d_layout(
     fig,
@@ -168,7 +169,6 @@ def _apply_3d_layout(
         height=height,
     )
 
-
 def build_points_csv(points_by_label, unit_label):
     """Convert grouped 3D points into CSV text for download."""
     output = io.StringIO()
@@ -182,39 +182,36 @@ def build_points_csv(points_by_label, unit_label):
 
     return output.getvalue()
 
-
 def format_point_group_summary(total_points, group_count):
     point_label = "point" if total_points == 1 else "points"
     group_label = "label group" if group_count == 1 else "label groups"
     return f"Loaded {total_points} {point_label} across {group_count} {group_label}."
 
-
 def summarize_point_groups(points_by_label):
     summaries = []
     for label in sorted(points_by_label):
-        coords = points_by_label[label]
-        if len(coords) == 0:
+        coords = _coerce_xyz_array(points_by_label[label])
+        if coords is None:
             continue
 
-        xs = [row[0] for row in coords]
-        ys = [row[1] for row in coords]
-        zs = [row[2] for row in coords]
+        xs = coords[:, 0]
+        ys = coords[:, 1]
+        zs = coords[:, 2]
 
         count = len(coords)
         summaries.append(
             {
                 "Label": label,
                 "Count": count,
-                "Min Z": round(min(zs), 2),
-                "Max Z": round(max(zs), 2),
-                "Mean Z": round(sum(zs) / count, 2),
-                "Centroid X": round(sum(xs) / count, 2),
-                "Centroid Y": round(sum(ys) / count, 2),
-                "Centroid Z": round(sum(zs) / count, 2),
+                "Min Z": round(float(zs.min()), 2),
+                "Max Z": round(float(zs.max()), 2),
+                "Mean Z": round(float(zs.mean()), 2),
+                "Centroid X": round(float(xs.mean()), 2),
+                "Centroid Y": round(float(ys.mean()), 2),
+                "Centroid Z": round(float(zs.mean()), 2),
             }
         )
     return summaries
-
 
 def build_group_summary_csv(summaries):
     """Convert tabular summary rows into CSV text for download."""
@@ -226,7 +223,6 @@ def build_group_summary_csv(summaries):
         writer.writerow({key: row.get(key, "") for key in fieldnames})
     return output.getvalue()
 
-
 def build_metadata_json(view_name, parameters):
     payload = {
         "view": view_name,
@@ -235,21 +231,17 @@ def build_metadata_json(view_name, parameters):
     }
     return json.dumps(payload, indent=2, sort_keys=True)
 
-
 @st.cache_data(show_spinner=False)
 def _get_cached_production_data():
     return get_sample_production_data()
-
 
 @st.cache_data(show_spinner=False)
 def _get_cached_usgs_data():
     return get_sample_usgs_mineral_data()
 
-
 def render_view_header(title, subtitle):
     st.header(title)
     st.caption(subtitle)
-
 
 def render_sidebar_intro():
     st.sidebar.markdown("### Available Features")
@@ -259,7 +251,6 @@ def render_sidebar_intro():
     st.sidebar.markdown("- Real Data: EIA energy trends")
     st.sidebar.markdown("- Real Data: USGS mineral snapshot")
     st.sidebar.markdown("- CSV upload for custom mine/well overlays")
-
 
 def render_mineral_view():
     render_view_header(
@@ -594,7 +585,6 @@ def render_petroleum_view():
         mime="application/json",
     )
 
-
 def render_real_data_view():
     render_view_header(
         "Real-World Commodity Production Data",
@@ -659,7 +649,8 @@ def render_real_data_view():
         usgs_data = _get_cached_usgs_data()
 
         minerals_latest = []
-        for mineral_name, series in usgs_data.items():
+        for mineral_name in sorted(usgs_data):
+            series = usgs_data[mineral_name]
             year, value = series[-1]
             minerals_latest.append((mineral_name, year, value))
 
