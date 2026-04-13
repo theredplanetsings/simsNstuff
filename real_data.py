@@ -1,5 +1,10 @@
 """Sample real-world commodity data helpers for the Streamlit app."""
 
+SERIES_CONFIG = (
+    ("coal_production", "Coal Production", "M tons", "Million short tons"),
+    ("crude_oil_production", "Crude Oil", "M bbl/day", "Million barrels/day"),
+    ("natural_gas_production", "Natural Gas", "Bcf/day", "Billion cubic feet/day"),
+)
 
 def get_sample_production_data():
     """
@@ -30,26 +35,21 @@ def get_sample_production_data():
         ],
     }
 
-
-def format_production_summary():
+def format_production_summary(limit=3):
     """
     Return formatted summary of real production data for UI display.
     """
+    if not isinstance(limit, int) or isinstance(limit, bool):
+        raise TypeError("limit must be an integer.")
+    if limit <= 0:
+        raise ValueError("limit must be greater than 0.")
+
     data = get_sample_production_data()
 
-    summary = ""
-    summary += "**U.S. Production Trends (2020-2024)**\n\n"
-
-    summary += "**Coal Production** (Million short tons)\n"
-    for year, value in data["coal_production"][:3]:
-        summary += f"- {year}: {value}M tons\n"
-
-    summary += "\n**Crude Oil** (Million barrels/day)\n"
-    for year, value in data["crude_oil_production"][:3]:
-        summary += f"- {year}: {value}M bbl/day\n"
-
-    summary += "\n**Natural Gas** (Billion cubic feet/day)\n"
-    for year, value in data["natural_gas_production"][:3]:
-        summary += f"- {year}: {value}Bcf/day\n"
-
-    return summary
+    lines = ["**U.S. Production Trends (2020-2024)**", ""]
+    for key, label, short_unit, long_unit in SERIES_CONFIG:
+        lines.append(f"**{label}** ({long_unit})")
+        for year, value in data[key][:limit]:
+            lines.append(f"- {year}: {value}{short_unit}")
+        lines.append("")
+    return "\n".join(lines).rstrip()
