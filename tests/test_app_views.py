@@ -1,5 +1,4 @@
 import unittest
-
 import numpy as np
 import json
 
@@ -12,7 +11,6 @@ from app_views import (
     format_point_group_summary,
     summarize_point_groups,
 )
-
 
 class BuildPointsCsvTests(unittest.TestCase):
     def test_build_points_csv_formats_rows(self):
@@ -49,7 +47,6 @@ class BuildPointsCsvTests(unittest.TestCase):
 
         self.assertEqual(lines[1], '"Mine, Sector A",1.000000,2.000000,3.000000,m')
 
-
 class FormatPointGroupSummaryTests(unittest.TestCase):
     def test_format_point_group_summary_handles_singular(self):
         summary = format_point_group_summary(total_points=1, group_count=1)
@@ -58,7 +55,6 @@ class FormatPointGroupSummaryTests(unittest.TestCase):
     def test_format_point_group_summary_handles_plural(self):
         summary = format_point_group_summary(total_points=12, group_count=3)
         self.assertEqual(summary, "Loaded 12 points across 3 label groups.")
-
 
 class ResolvePresetTests(unittest.TestCase):
     def test_resolve_preset_returns_preset_values(self):
@@ -72,7 +68,6 @@ class ResolvePresetTests(unittest.TestCase):
     def test_resolve_preset_returns_empty_dict_for_unknown(self):
         presets = {"Custom": None}
         self.assertEqual(_resolve_preset("Unknown", presets), {})
-
 
 class SummarizePointGroupsTests(unittest.TestCase):
     def test_summarize_point_groups_builds_expected_metrics(self):
@@ -88,7 +83,6 @@ class SummarizePointGroupsTests(unittest.TestCase):
     def test_summarize_point_groups_ignores_empty_groups(self):
         summaries = summarize_point_groups({"Mine A": []})
         self.assertEqual(summaries, [])
-
 
 class BuildGroupSummaryCsvTests(unittest.TestCase):
     def test_build_group_summary_csv_writes_header_and_rows(self):
@@ -121,7 +115,6 @@ class BuildGroupSummaryCsvTests(unittest.TestCase):
             "Label,Count,Min Z,Max Z,Mean Z,Centroid X,Centroid Y,Centroid Z",
         )
 
-
 class CrossSectionFigureTests(unittest.TestCase):
     def test_cross_section_uses_x_axis_for_xz(self):
         points = {"A": np.array([[1.0, 2.0, -3.0]])}
@@ -137,6 +130,18 @@ class CrossSectionFigureTests(unittest.TestCase):
 
         self.assertEqual(fig.layout.xaxis.title.text, "Y (km)")
 
+    def test_cross_section_accepts_list_points(self):
+        points = {"A": [[1.0, 2.0, -3.0], [2.0, 3.0, -4.0]]}
+        fig = _build_cross_section_figure(points, "X-Z", "Test")
+
+        self.assertEqual(len(fig.data), 1)
+
+class SummariesRobustnessTests(unittest.TestCase):
+    def test_summarize_point_groups_skips_malformed_coordinates(self):
+        summaries = summarize_point_groups({"Good": [[1, 2, 3]], "Bad": [[1, 2]]})
+
+        self.assertEqual(len(summaries), 1)
+        self.assertEqual(summaries[0]["Label"], "Good")
 
 class MetadataJsonTests(unittest.TestCase):
     def test_build_metadata_json_contains_expected_fields(self):
