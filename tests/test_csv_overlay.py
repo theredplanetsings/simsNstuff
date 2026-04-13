@@ -1,7 +1,5 @@
 import unittest
-
 from csv_overlay import build_uploaded_points_template, downsample_grouped_points, parse_uploaded_points
-
 
 class TestCsvOverlay(unittest.TestCase):
     def test_build_uploaded_points_template_has_required_columns(self):
@@ -89,6 +87,12 @@ class TestCsvOverlay(unittest.TestCase):
 
         self.assertEqual(parsed, {"Mine A": [(1.0, 2.0, 3.0)]})
 
+    def test_parse_uploaded_points_rejects_duplicate_normalized_headers(self):
+        payload = "x, X ,y,z\n1,2,3,4\n".encode("utf-8")
+
+        with self.assertRaisesRegex(ValueError, "CSV contains duplicate column names"):
+            parse_uploaded_points(payload)
+
     def test_parse_uploaded_points_rejects_non_finite_values(self):
         payload = "x,y,z\n1,nan,3\n".encode("utf-8")
 
@@ -168,7 +172,6 @@ class TestCsvOverlay(unittest.TestCase):
     def test_downsample_grouped_points_rejects_non_positive_max(self):
         with self.assertRaisesRegex(ValueError, "max_points must be greater than 0"):
             downsample_grouped_points({"A": [(1.0, 2.0, 3.0)]}, max_points=0, seed=42)
-
 
 if __name__ == "__main__":
     unittest.main()
