@@ -61,6 +61,15 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 
 ## Changelog
 
+### 2026-04-13
+- Added duplicate-header protection for uploaded CSV parsing to avoid ambiguous column mapping.
+- Made production and USGS summary formatters configurable with validated `limit` arguments.
+- Improved summary/cross-section helper robustness for mixed list/array coordinate inputs.
+- Enabled deterministic USGS commodity ordering in both markdown summary and chart rendering.
+- Added Streamlit page config defaults for a wider layout and expanded sidebar.
+- Added Makefile helpers: `test-verbose`, `smoke`, and `clean`.
+- Expanded unit coverage for new parser, generator, and summary-edge behaviors.
+
 ### 2026-04-10
 - Fixed local `pytest` import path discovery by adding project-level pytest configuration.
 - Hardened boolean validation for depth, trap efficiency, and coordinate-bound parsing edge cases.
@@ -128,6 +137,8 @@ make lint
 make format-check
 make quality
 make run
+make smoke
+make clean
 ```
 
 1. Install dependencies:
