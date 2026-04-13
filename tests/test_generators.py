@@ -1,9 +1,6 @@
 import unittest
-
 import numpy as np
-
 from generators import generate_petroleum_deposits, generate_realistic_deposits
-
 
 class GeneratorContractTests(unittest.TestCase):
     def test_mineral_generation_is_deterministic(self):
@@ -30,6 +27,10 @@ class GeneratorContractTests(unittest.TestCase):
     def test_mineral_generation_rejects_invalid_mode(self):
         with self.assertRaisesRegex(ValueError, "Unsupported mineral mode"):
             generate_realistic_deposits("Copper", "Invalid mode", 10, 11, 1.2, 4)
+
+    def test_mineral_generation_rejects_non_string_mode(self):
+        with self.assertRaisesRegex(TypeError, "mineral mode must be a string"):
+            generate_realistic_deposits("Copper", None, 10, 11, 1.2, 4)
 
     def test_mineral_generation_rejects_zero_complexity(self):
         with self.assertRaisesRegex(ValueError, "complexity must be greater than 0"):
@@ -100,6 +101,10 @@ class GeneratorContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Unsupported petroleum deposit type"):
             generate_petroleum_deposits("Water", 50, 1, 0.6, 42)
 
+    def test_petroleum_generation_rejects_non_string_type(self):
+        with self.assertRaisesRegex(TypeError, "petroleum deposit type must be a string"):
+            generate_petroleum_deposits(None, 50, 1, 0.6, 42)
+
     def test_petroleum_generation_rejects_invalid_trap_efficiency_range(self):
         with self.assertRaisesRegex(ValueError, "trap_efficiency must be between 0 and 1"):
             generate_petroleum_deposits("Oil", 50, 1, 1.1, 42)
@@ -127,7 +132,6 @@ class GeneratorContractTests(unittest.TestCase):
     def test_petroleum_generation_rejects_negative_noise_scale(self):
         with self.assertRaisesRegex(ValueError, "noise_scale must be greater than or equal to 0"):
             generate_petroleum_deposits("Oil", 50, 1, 0.6, 42, noise_scale=-1)
-
 
 if __name__ == "__main__":
     unittest.main()
