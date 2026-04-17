@@ -1,8 +1,10 @@
 import unittest
 import numpy as np
 import json
+import plotly.graph_objects as go
 
 from app_views import (
+    _add_grouped_scatter3d_traces,
     _build_cross_section_figure,
     _resolve_preset,
     build_group_summary_csv,
@@ -135,6 +137,23 @@ class CrossSectionFigureTests(unittest.TestCase):
         fig = _build_cross_section_figure(points, "X-Z", "Test")
 
         self.assertEqual(len(fig.data), 1)
+
+class GroupedScatterTraceTests(unittest.TestCase):
+    def test_grouped_scatter_traces_skip_empty_groups(self):
+        fig = go.Figure()
+
+        _add_grouped_scatter3d_traces(
+            fig,
+            {"B": [], "A": np.array([[1.0, 2.0, 3.0]])},
+            lambda label, index: "red",
+            marker_size=6,
+            opacity=0.8,
+            line_color="white",
+            hovertemplate_for_group=lambda label: label,
+        )
+
+        self.assertEqual(len(fig.data), 1)
+        self.assertEqual(fig.data[0].name, "A")
 
 class SummariesRobustnessTests(unittest.TestCase):
     def test_summarize_point_groups_skips_malformed_coordinates(self):
