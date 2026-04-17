@@ -122,7 +122,7 @@ class TestCsvOverlay(unittest.TestCase):
     def test_parse_uploaded_points_rejects_out_of_bounds_coordinate(self):
         payload = "x,y,z\n99999,2,3\n".encode("utf-8")
 
-        with self.assertRaisesRegex(ValueError, "Invalid numeric values at row 1"):
+        with self.assertRaisesRegex(ValueError, "x out of bounds at row 1"):
             parse_uploaded_points(payload, coordinate_bounds=(-10, 10))
 
     def test_parse_uploaded_points_rejects_bad_coordinate_bounds_shape(self):
