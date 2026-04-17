@@ -88,6 +88,12 @@ def _validate_text_choice(value, name, choices):
 def _empty_coords():
     return np.zeros((0, 3))
 
+def _apply_noise(coords, rng, noise_scale):
+    if noise_scale <= 0 or len(coords) == 0:
+        return coords
+
+    return coords + rng.normal(0, noise_scale, size=coords.shape)
+
 def generate_realistic_deposits(mineral, mode, n_deposits, seed, depth_factor, complexity, noise_scale=0.0):
     """Generate geologically realistic mineral deposits."""
     _validate_non_negative_int(n_deposits, "n_deposits")
@@ -220,9 +226,7 @@ def generate_realistic_deposits(mineral, mode, n_deposits, seed, depth_factor, c
         coords = np.array(coords)
 
     coords[:, 2] *= depth_factor
-    if noise_scale > 0:
-        coords = coords + rng.normal(0, noise_scale, size=coords.shape)
-    return coords
+    return _apply_noise(coords, rng, noise_scale)
 
 def generate_petroleum_deposits(deposit_type, basin_size, reservoir_count, trap_efficiency, seed, noise_scale=0.0):
     """Generate realistic petroleum deposits."""
@@ -309,6 +313,4 @@ def generate_petroleum_deposits(deposit_type, basin_size, reservoir_count, trap_
             reservoir_blocks.append(coords)
 
     output = np.vstack(reservoir_blocks) if reservoir_blocks else _empty_coords()
-    if noise_scale > 0 and len(output) > 0:
-        output = output + rng.normal(0, noise_scale, size=output.shape)
-    return output
+    return _apply_noise(output, rng, noise_scale)
