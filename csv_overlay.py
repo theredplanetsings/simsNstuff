@@ -79,16 +79,10 @@ def parse_uploaded_points(uploaded_bytes, coordinate_bounds=None):
         if not any((value or "").strip() for value in key_map.values()):
             continue
 
-        try:
-            x_val = float((key_map.get("x") or "").strip())
-            y_val = float((key_map.get("y") or "").strip())
-            z_val = float((key_map.get("z") or "").strip())
-
-            if not all(math.isfinite(val) for val in (x_val, y_val, z_val)):
-                raise ValueError("non-finite coordinate")
-            _validate_coordinate_bounds(x_val, y_val, z_val, bounds)
-        except (KeyError, TypeError, ValueError) as exc:
-            raise ValueError(f"Invalid numeric values at row {row_count}") from exc
+        x_val = _parse_coordinate_value(key_map, "x", row_count)
+        y_val = _parse_coordinate_value(key_map, "y", row_count)
+        z_val = _parse_coordinate_value(key_map, "z", row_count)
+        _validate_coordinate_bounds(x_val, y_val, z_val, bounds, row_count)
 
         label = (key_map.get("label") or "Uploaded").strip() or "Uploaded"
         groups.setdefault(label, []).append((x_val, y_val, z_val))
@@ -134,14 +128,27 @@ def _normalize_fieldnames(fieldnames):
 
     return set(normalized)
 
-def _validate_coordinate_bounds(x_val, y_val, z_val, bounds):
+def _parse_coordinate_value(key_map, field_name, row_number):
+    raw_value = (key_map.get(field_name) or "").strip()
+
+    try:
+        value = float(raw_value)
+    except ValueError as exc:
+        raise ValueError(f"Invalid numeric values at row {row_number}") from exc
+
+    if not math.isfinite(value):
+        raise ValueError(f"Invalid numeric values at row {row_number}")
+
+    return value
+
+def _validate_coordinate_bounds(x_val, y_val, z_val, bounds, row_number):
     if bounds is None:
         return
 
     min_value, max_value = bounds
     if not (min_value <= x_val <= max_value):
-        raise ValueError("x out of bounds")
+        raise ValueError(f"x out of bounds at row {row_number}")
     if not (min_value <= y_val <= max_value):
-        raise ValueError("y out of bounds")
+        raise ValueError(f"y out of bounds at row {row_number}")
     if not (min_value <= z_val <= max_value):
-        raise ValueError("z out of bounds")
+        raise ValueError(f"z out of bounds at row {row_number}")
