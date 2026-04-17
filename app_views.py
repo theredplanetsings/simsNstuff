@@ -169,6 +169,39 @@ def _apply_3d_layout(
         height=height,
     )
 
+
+def _add_grouped_scatter3d_traces(
+    fig,
+    grouped_points,
+    color_for_group,
+    *,
+    marker_size,
+    opacity,
+    line_color,
+    hovertemplate_for_group,
+):
+    for index, label in enumerate(sorted(grouped_points)):
+        coords = _coerce_xyz_array(grouped_points[label])
+        if coords is None or len(coords) == 0:
+            continue
+
+        fig.add_trace(
+            go.Scatter3d(
+                x=coords[:, 0],
+                y=coords[:, 1],
+                z=coords[:, 2],
+                mode="markers",
+                marker=dict(
+                    size=marker_size,
+                    color=color_for_group(label, index),
+                    opacity=opacity,
+                    line=dict(color=line_color, width=1),
+                ),
+                name=label,
+                hovertemplate=hovertemplate_for_group(label),
+            )
+        )
+
 def build_points_csv(points_by_label, unit_label):
     """Convert grouped 3D points into CSV text for download."""
     output = io.StringIO()
@@ -341,19 +374,17 @@ def render_mineral_view():
         )
 
     fig_minerals = go.Figure()
-    for mineral in selected_minerals:
-        coords = deposits[mineral]
-        fig_minerals.add_trace(
-            go.Scatter3d(
-                x=coords[:, 0],
-                y=coords[:, 1],
-                z=coords[:, 2],
-                mode="markers",
-                marker=dict(size=6, color=MINERALS[mineral], opacity=0.8, line=dict(color="white", width=1)),
-                name=mineral,
-                hovertemplate=f"<b>{mineral}</b><br>X: %{{x:.1f}}<br>Y: %{{y:.1f}}<br>Depth: %{{z:.1f}}<extra></extra>",
-            )
-        )
+    _add_grouped_scatter3d_traces(
+        fig_minerals,
+        deposits,
+        lambda label, index: MINERALS[label],
+        marker_size=6,
+        opacity=0.8,
+        line_color="white",
+        hovertemplate_for_group=lambda label: (
+            f"<b>{label}</b><br>X: %{{x:.1f}}<br>Y: %{{y:.1f}}<br>Depth: %{{z:.1f}}<extra></extra>"
+        ),
+    )
 
     _apply_3d_layout(
         fig_minerals,
@@ -501,20 +532,17 @@ def render_petroleum_view():
         )
 
     fig_petroleum = go.Figure()
-    for pet_type in selected_petroleum:
-        coords = petroleum_deposits[pet_type]
-        if len(coords) > 0:
-            fig_petroleum.add_trace(
-                go.Scatter3d(
-                    x=coords[:, 0],
-                    y=coords[:, 1],
-                    z=coords[:, 2],
-                    mode="markers",
-                    marker=dict(size=8, color=PETROLEUM[pet_type], opacity=0.7, line=dict(color="black", width=1)),
-                    name=pet_type,
-                    hovertemplate=f"<b>{pet_type}</b><br>X: %{{x:.1f}}<br>Y: %{{y:.1f}}<br>Depth: %{{z:.0f}}m<extra></extra>",
-                )
-            )
+    _add_grouped_scatter3d_traces(
+        fig_petroleum,
+        petroleum_deposits,
+        lambda label, index: PETROLEUM[label],
+        marker_size=8,
+        opacity=0.7,
+        line_color="black",
+        hovertemplate_for_group=lambda label: (
+            f"<b>{label}</b><br>X: %{{x:.1f}}<br>Y: %{{y:.1f}}<br>Depth: %{{z:.0f}}m<extra></extra>"
+        ),
+    )
 
     _apply_3d_layout(
         fig_petroleum,
@@ -740,26 +768,17 @@ def render_real_data_view():
                 "#8ab17d",
             ]
 
-            for idx, (label, points) in enumerate(grouped_points.items()):
-                xs = [pt[0] for pt in points]
-                ys = [pt[1] for pt in points]
-                zs = [pt[2] for pt in points]
-                fig_uploaded.add_trace(
-                    go.Scatter3d(
-                        x=xs,
-                        y=ys,
-                        z=zs,
-                        mode="markers",
-                        marker=dict(
-                            size=7,
-                            color=palette[idx % len(palette)],
-                            opacity=0.85,
-                            line=dict(color="white", width=1),
-                        ),
-                        name=label,
-                        hovertemplate=f"<b>{label}</b><br>X: %{{x:.2f}}<br>Y: %{{y:.2f}}<br>Z: %{{z:.2f}}<extra></extra>",
-                    )
-                )
+            _add_grouped_scatter3d_traces(
+                fig_uploaded,
+                grouped_points,
+                lambda label, idx: palette[idx % len(palette)],
+                marker_size=7,
+                opacity=0.85,
+                line_color="white",
+                hovertemplate_for_group=lambda label: (
+                    f"<b>{label}</b><br>X: %{{x:.2f}}<br>Y: %{{y:.2f}}<br>Z: %{{z:.2f}}<extra></extra>"
+                ),
+            )
 
             _apply_3d_layout(
                 fig_uploaded,
