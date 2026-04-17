@@ -1,10 +1,16 @@
 """Sample real-world commodity data helpers for the Streamlit app."""
-
 SERIES_CONFIG = (
     ("coal_production", "Coal Production", "M tons", "Million short tons"),
     ("crude_oil_production", "Crude Oil", "M bbl/day", "Million barrels/day"),
     ("natural_gas_production", "Natural Gas", "Bcf/day", "Billion cubic feet/day"),
 )
+
+def _format_series_block(label, series, short_unit, long_unit, limit):
+    lines = [f"**{label}** ({long_unit})"]
+    for year, value in series[:limit]:
+        lines.append(f"- {year}: {value}{short_unit}")
+    lines.append("")
+    return lines
 
 def get_sample_production_data():
     """
@@ -48,8 +54,5 @@ def format_production_summary(limit=3):
 
     lines = ["**U.S. Production Trends (2020-2024)**", ""]
     for key, label, short_unit, long_unit in SERIES_CONFIG:
-        lines.append(f"**{label}** ({long_unit})")
-        for year, value in data[key][:limit]:
-            lines.append(f"- {year}: {value}{short_unit}")
-        lines.append("")
+        lines.extend(_format_series_block(label, data[key], short_unit, long_unit, limit))
     return "\n".join(lines).rstrip()
