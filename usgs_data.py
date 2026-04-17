@@ -7,6 +7,8 @@ USGS_UNITS = {
     "Coal": "million tonnes",
 }
 
+USGS_MINERAL_ORDER = tuple(sorted(USGS_UNITS))
+
 def get_sample_usgs_mineral_data():
     """Return representative USGS-style annual mineral production statistics.
 
@@ -66,7 +68,7 @@ def format_usgs_summary(limit=None):
         "Approximate global mine production trends for selected commodities.",
         "",
     ]
-    mineral_names = sorted(data.keys())
+    mineral_names = [mineral for mineral in USGS_MINERAL_ORDER if mineral in data]
     if limit is not None:
         mineral_names = mineral_names[:limit]
 
