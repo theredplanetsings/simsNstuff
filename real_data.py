@@ -4,6 +4,7 @@ SERIES_CONFIG = (
     ("crude_oil_production", "Crude Oil", "M bbl/day", "Million barrels/day"),
     ("natural_gas_production", "Natural Gas", "Bcf/day", "Billion cubic feet/day"),
 )
+MAX_SUMMARY_YEARS = 5
 
 def _format_series_block(label, series, short_unit, long_unit, limit):
     lines = [f"**{label}** ({long_unit})"]
@@ -49,6 +50,8 @@ def format_production_summary(limit=3):
         raise TypeError("limit must be an integer.")
     if limit <= 0:
         raise ValueError("limit must be greater than 0.")
+    if limit > MAX_SUMMARY_YEARS:
+        raise ValueError(f"limit must be less than or equal to {MAX_SUMMARY_YEARS}.")
 
     data = get_sample_production_data()
 
