@@ -6,10 +6,14 @@ SERIES_CONFIG = (
 )
 MAX_SUMMARY_YEARS = 5
 
+def _format_compact_number(value):
+    formatted = f"{float(value):,.2f}"
+    return formatted.rstrip("0").rstrip(".")
+
 def _format_series_block(label, series, short_unit, long_unit, limit):
     lines = [f"**{label}** ({long_unit})"]
     for year, value in series[:limit]:
-        lines.append(f"- {year}: {value}{short_unit}")
+        lines.append(f"- {year}: {_format_compact_number(value)}{short_unit}")
     lines.append("")
     return lines
 
