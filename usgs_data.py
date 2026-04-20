@@ -9,6 +9,11 @@ USGS_UNITS = {
 
 USGS_MINERAL_ORDER = tuple(sorted(USGS_UNITS))
 
+def _ordered_mineral_names(data):
+    preferred = [mineral for mineral in USGS_MINERAL_ORDER if mineral in data]
+    extras = sorted(mineral for mineral in data if mineral not in USGS_UNITS)
+    return preferred + extras
+
 def get_sample_usgs_mineral_data():
     """Return representative USGS-style annual mineral production statistics.
 
@@ -68,7 +73,7 @@ def format_usgs_summary(limit=None):
         "Approximate global mine production trends for selected commodities.",
         "",
     ]
-    mineral_names = [mineral for mineral in USGS_MINERAL_ORDER if mineral in data]
+    mineral_names = _ordered_mineral_names(data)
     if limit is not None:
         mineral_names = mineral_names[:limit]
 
@@ -77,6 +82,7 @@ def format_usgs_summary(limit=None):
         if not series:
             continue
         latest_year, latest_value = series[-1]
-        lines.append(f"- **{mineral} ({latest_year})**: {latest_value:,} {USGS_UNITS[mineral]}")
+        unit = USGS_UNITS.get(mineral, "units")
+        lines.append(f"- **{mineral} ({latest_year})**: {latest_value:,} {unit}")
 
     return "\n".join(lines)
