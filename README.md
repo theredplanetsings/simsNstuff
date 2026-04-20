@@ -61,6 +61,18 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 
 ## Changelog
 
+### 2026-04-20
+- Hardened grouped-point CSV export to skip malformed coordinate groups rather than failing.
+- Added uploaded-label normalization and max-length validation for CSV overlay parsing.
+- Fixed sedimentary generation edge case at minimum complexity and hardened unit-vector normalization.
+- Simplified Streamlit main view routing using a dispatch mapping.
+- Added upper-bound validation for production summary display limits.
+- Improved USGS snapshot output by skipping empty series and formatting values with separators.
+- Added app-view tests for malformed-group CSV export behavior.
+- Added CSV overlay tests for trimmed labels and overlength-label rejection.
+- Added generator test coverage for sedimentary mode with minimum complexity.
+- Added real-data tests for production limit upper bound and USGS formatted values.
+
 ### 2026-04-13
 - Added duplicate-header protection for uploaded CSV parsing to avoid ambiguous column mapping.
 - Made production and USGS summary formatters configurable with validated `limit` arguments.
