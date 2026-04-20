@@ -56,7 +56,8 @@ def parse_uploaded_points(uploaded_bytes, coordinate_bounds=None):
     payload = bytes(uploaded_bytes)
 
     try:
-        text = payload.decode("utf-8")
+        # Accept UTF-8 with or without BOM for common spreadsheet exports.
+        text = payload.decode("utf-8-sig")
     except UnicodeDecodeError as exc:
         raise ValueError("CSV must be UTF-8 encoded.") from exc
 
