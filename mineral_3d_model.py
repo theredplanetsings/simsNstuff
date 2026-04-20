@@ -19,12 +19,12 @@ def main():
     if deposit_type == "Real Data":
         st.caption("Real Data includes EIA trends, USGS mineral statistics, and CSV upload overlays.")
 
-    if deposit_type == "Mineral Deposits":
-        render_mineral_view()
-    elif deposit_type == "Petroleum Deposits":
-        render_petroleum_view()
-    elif deposit_type == "Real Data":
-        render_real_data_view()
+    view_handlers = {
+        "Mineral Deposits": render_mineral_view,
+        "Petroleum Deposits": render_petroleum_view,
+        "Real Data": render_real_data_view,
+    }
+    view_handlers[deposit_type]()
 
     st.markdown("---")
     st.markdown("**Instructions:**")
