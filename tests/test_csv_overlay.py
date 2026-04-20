@@ -80,6 +80,20 @@ class TestCsvOverlay(unittest.TestCase):
 
         self.assertEqual(parsed, {"Uploaded": [(1.0, 2.0, 3.0)]})
 
+    def test_parse_uploaded_points_trims_label_whitespace(self):
+        payload = "x,y,z,label\n1,2,3,  Mine A  \n".encode("utf-8")
+
+        parsed = parse_uploaded_points(payload)
+
+        self.assertEqual(parsed, {"Mine A": [(1.0, 2.0, 3.0)]})
+
+    def test_parse_uploaded_points_rejects_too_long_label(self):
+        long_label = "X" * 81
+        payload = f"x,y,z,label\n1,2,3,{long_label}\n".encode("utf-8")
+
+        with self.assertRaisesRegex(ValueError, "Label too long at row 1"):
+            parse_uploaded_points(payload)
+
     def test_parse_uploaded_points_accepts_whitespace_in_headers(self):
         payload = " X , Y , Z , Label \n1,2,3,Mine A\n".encode("utf-8")
 
