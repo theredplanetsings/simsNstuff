@@ -28,6 +28,10 @@ class RealDataHelpersTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "limit must be greater than 0"):
             format_production_summary(limit=0)
 
+    def test_format_production_summary_rejects_too_large_limit(self):
+        with self.assertRaisesRegex(ValueError, "limit must be less than or equal to 5"):
+            format_production_summary(limit=6)
+
 class UsgsDataHelpersTests(unittest.TestCase):
     def test_get_sample_usgs_data_contains_expected_commodities(self):
         data = get_sample_usgs_mineral_data()
@@ -53,6 +57,10 @@ class UsgsDataHelpersTests(unittest.TestCase):
         summary = format_usgs_summary(limit=2)
 
         self.assertEqual(summary.count("- **"), 2)
+
+    def test_format_usgs_summary_formats_values_with_separators(self):
+        summary = format_usgs_summary(limit=1)
+        self.assertIn("8,400", summary)
 
     def test_format_usgs_summary_rejects_invalid_limit(self):
         with self.assertRaisesRegex(TypeError, "limit must be an integer or None"):
