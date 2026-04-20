@@ -62,6 +62,11 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 ## Changelog
 
 ### 2026-04-20
+- Hardened deterministic seed derivation by validating and normalizing per-label seed keys.
+- Added UTF-8 BOM-tolerant decoding for uploaded CSV parsing.
+- Improved production summary formatting with compact, separator-aware numeric output.
+- Expanded USGS snapshot summaries to include additional commodity series safely.
+- Added validation for point/group summary counts to fail fast on invalid inputs.
 - Hardened grouped-point CSV export to skip malformed coordinate groups rather than failing.
 - Added uploaded-label normalization and max-length validation for CSV overlay parsing.
 - Fixed sedimentary generation edge case at minimum complexity and hardened unit-vector normalization.
