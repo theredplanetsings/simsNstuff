@@ -94,6 +94,12 @@ def _apply_noise(coords, rng, noise_scale):
 
     return coords + rng.normal(0, noise_scale, size=coords.shape)
 
+def _unit_vector(vector, fallback):
+    norm = np.linalg.norm(vector)
+    if norm == 0 or not np.isfinite(norm):
+        return np.array(fallback, dtype=float)
+    return vector / norm
+
 def generate_realistic_deposits(mineral, mode, n_deposits, seed, depth_factor, complexity, noise_scale=0.0):
     """Generate geologically realistic mineral deposits."""
     _validate_non_negative_int(n_deposits, "n_deposits")
@@ -137,7 +143,7 @@ def generate_realistic_deposits(mineral, mode, n_deposits, seed, depth_factor, c
 
         for _ in range(n_deposits - 1):
             direction = rng.normal([0.5, 0.3, -0.2], 0.3)
-            direction = direction / np.linalg.norm(direction)
+            direction = _unit_vector(direction, fallback=[1.0, 0.0, 0.0])
 
             step_size = rng.uniform(1, 4)
             current_pos = current_pos + direction * step_size
@@ -153,14 +159,15 @@ def generate_realistic_deposits(mineral, mode, n_deposits, seed, depth_factor, c
                 if len(coords) >= n_deposits:
                     break
                 direction = rng.normal([0, 0, -0.5], 0.4)
-                direction = direction / np.linalg.norm(direction)
+                direction = _unit_vector(direction, fallback=[0.0, 0.0, -1.0])
                 branch_pos = branch_pos + direction * rng.uniform(1, 3)
                 coords.append(branch_pos.copy())
 
         coords = np.array(coords[:n_deposits])
 
     elif mode == "Sedimentary layers":
-        n_layers = rng.integers(2, complexity + 1)
+        min_layers = 1 if complexity == 1 else 2
+        n_layers = rng.integers(min_layers, complexity + 1)
         coords = []
         dip_direction = rng.uniform(0, 2 * np.pi)
         dip_strength = rng.uniform(0.01, 0.08)
