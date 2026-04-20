@@ -49,6 +49,12 @@ class BuildPointsCsvTests(unittest.TestCase):
 
         self.assertEqual(lines[1], '"Mine, Sector A",1.000000,2.000000,3.000000,m')
 
+    def test_build_points_csv_skips_malformed_coordinate_groups(self):
+        csv_text = build_points_csv({"Good": [(1, 2, 3)], "Bad": [(1, 2)]}, "m")
+        lines = csv_text.strip().splitlines()
+
+        self.assertEqual(len(lines), 2)
+        self.assertIn("Good,1.000000,2.000000,3.000000,m", lines)
 class FormatPointGroupSummaryTests(unittest.TestCase):
     def test_format_point_group_summary_handles_singular(self):
         summary = format_point_group_summary(total_points=1, group_count=1)
@@ -70,7 +76,6 @@ class ResolvePresetTests(unittest.TestCase):
     def test_resolve_preset_returns_empty_dict_for_unknown(self):
         presets = {"Custom": None}
         self.assertEqual(_resolve_preset("Unknown", presets), {})
-
 class SummarizePointGroupsTests(unittest.TestCase):
     def test_summarize_point_groups_builds_expected_metrics(self):
         summaries = summarize_point_groups({"Mine A": [(0.0, 1.0, -10.0), (2.0, 3.0, -6.0)]})
@@ -85,7 +90,6 @@ class SummarizePointGroupsTests(unittest.TestCase):
     def test_summarize_point_groups_ignores_empty_groups(self):
         summaries = summarize_point_groups({"Mine A": []})
         self.assertEqual(summaries, [])
-
 class BuildGroupSummaryCsvTests(unittest.TestCase):
     def test_build_group_summary_csv_writes_header_and_rows(self):
         csv_text = build_group_summary_csv(
@@ -170,7 +174,6 @@ class MetadataJsonTests(unittest.TestCase):
         self.assertEqual(data["view"], "Mineral Deposits")
         self.assertEqual(data["parameters"]["seed"], 42)
         self.assertIn("generated_at", data)
-
 
 if __name__ == "__main__":
     unittest.main()
