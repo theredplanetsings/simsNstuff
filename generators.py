@@ -14,9 +14,18 @@ SUPPORTED_PETROLEUM_TYPES = {"Oil", "Natural Gas", "Oil Shale", "Gas Hydrates"}
 def derive_stable_seed(base_seed, label):
     """Create a deterministic per-label seed from a user-provided base seed."""
     normalized_seed = _normalize_seed(base_seed)
-    key = f"{normalized_seed}:{label}".encode("utf-8")
+    normalized_label = _normalize_seed_label(label)
+    key = f"{normalized_seed}:{normalized_label}".encode("utf-8")
     digest = hashlib.blake2b(key, digest_size=4).digest()
     return int.from_bytes(digest, "little")
+
+def _normalize_seed_label(label):
+    if not isinstance(label, str):
+        raise TypeError("label must be a string.")
+    normalized = label.strip()
+    if not normalized:
+        raise ValueError("label must not be empty.")
+    return normalized
 
 def _normalize_seed(base_seed):
     if isinstance(base_seed, (bool, np.bool_)):
