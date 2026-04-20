@@ -218,6 +218,15 @@ def build_points_csv(points_by_label, unit_label):
     return output.getvalue()
 
 def format_point_group_summary(total_points, group_count):
+    if not isinstance(total_points, int) or isinstance(total_points, bool):
+        raise TypeError("total_points must be an integer.")
+    if not isinstance(group_count, int) or isinstance(group_count, bool):
+        raise TypeError("group_count must be an integer.")
+    if total_points < 0:
+        raise ValueError("total_points must be greater than or equal to 0.")
+    if group_count < 0:
+        raise ValueError("group_count must be greater than or equal to 0.")
+
     point_label = "point" if total_points == 1 else "points"
     group_label = "label group" if group_count == 1 else "label groups"
     return f"Loaded {total_points} {point_label} across {group_count} {group_label}."
