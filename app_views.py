@@ -209,7 +209,9 @@ def build_points_csv(points_by_label, unit_label):
     writer.writerow(["deposit_type", "x", "y", "z", "z_unit"])
 
     for label in sorted(points_by_label):
-        coords = points_by_label[label]
+        coords = _coerce_xyz_array(points_by_label[label])
+        if coords is None:
+            continue
         for x, y, z in coords:
             writer.writerow([label, f"{x:.6f}", f"{y:.6f}", f"{z:.6f}", unit_label])
 
@@ -454,7 +456,6 @@ def render_mineral_view():
         file_name="mineral_metadata.json",
         mime="application/json",
     )
-
 
 def render_petroleum_view():
     render_view_header(
