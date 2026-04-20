@@ -74,7 +74,9 @@ def format_usgs_summary(limit=None):
 
     for mineral in mineral_names:
         series = data[mineral]
+        if not series:
+            continue
         latest_year, latest_value = series[-1]
-        lines.append(f"- **{mineral} ({latest_year})**: {latest_value} {USGS_UNITS[mineral]}")
+        lines.append(f"- **{mineral} ({latest_year})**: {latest_value:,} {USGS_UNITS[mineral]}")
 
     return "\n".join(lines)
