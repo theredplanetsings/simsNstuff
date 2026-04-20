@@ -20,6 +20,10 @@ class GeneratorContractTests(unittest.TestCase):
             coords = generate_realistic_deposits("Copper", mode, 75, 11, 1.2, 4)
             self.assertEqual(coords.shape, (75, 3))
 
+    def test_sedimentary_mode_supports_minimum_complexity(self):
+        coords = generate_realistic_deposits("Copper", "Sedimentary layers", 20, 11, 1.2, 1)
+        self.assertEqual(coords.shape, (20, 3))
+
     def test_mineral_generation_returns_empty_array_for_zero_points(self):
         coords = generate_realistic_deposits("Copper", "Placer deposits", 0, 11, 1.2, 4)
         self.assertEqual(coords.shape, (0, 3))
