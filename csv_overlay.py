@@ -6,6 +6,7 @@ import numpy as np
 
 REQUIRED_COLUMNS = {"x", "y", "z"}
 OPTIONAL_COLUMNS = {"label"}
+MAX_LABEL_LENGTH = 80
 
 def build_uploaded_points_template():
     """Return a small CSV template for mine/well coordinate uploads."""
@@ -84,7 +85,7 @@ def parse_uploaded_points(uploaded_bytes, coordinate_bounds=None):
         z_val = _parse_coordinate_value(key_map, "z", row_count)
         _validate_coordinate_bounds(x_val, y_val, z_val, bounds, row_count)
 
-        label = (key_map.get("label") or "Uploaded").strip() or "Uploaded"
+        label = _normalize_label(key_map.get("label"), row_count)
         groups.setdefault(label, []).append((x_val, y_val, z_val))
 
     if row_count == 0:
@@ -152,3 +153,11 @@ def _validate_coordinate_bounds(x_val, y_val, z_val, bounds, row_number):
         raise ValueError(f"y out of bounds at row {row_number}")
     if not (min_value <= z_val <= max_value):
         raise ValueError(f"z out of bounds at row {row_number}")
+
+def _normalize_label(raw_label, row_number):
+    label = (raw_label or "Uploaded").strip() or "Uploaded"
+    if len(label) > MAX_LABEL_LENGTH:
+        raise ValueError(
+            f"Label too long at row {row_number}; maximum length is {MAX_LABEL_LENGTH} characters"
+        )
+    return label
