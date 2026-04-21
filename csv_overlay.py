@@ -107,7 +107,8 @@ def _normalize_coordinate_bounds(coordinate_bounds):
     min_value, max_value = coordinate_bounds
     if isinstance(min_value, bool) or isinstance(max_value, bool):
         raise TypeError("coordinate_bounds values must be numeric.")
-    if not isinstance(min_value, (int, float)) or not isinstance(max_value, (int, float)):
+    numeric_types = (int, float, np.integer, np.floating)
+    if not isinstance(min_value, numeric_types) or not isinstance(max_value, numeric_types):
         raise TypeError("coordinate_bounds values must be numeric.")
     if not (math.isfinite(min_value) and math.isfinite(max_value)):
         raise ValueError("coordinate_bounds values must be finite.")

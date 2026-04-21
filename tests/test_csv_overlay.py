@@ -1,4 +1,5 @@
 import unittest
+import numpy as np
 from csv_overlay import build_uploaded_points_template, downsample_grouped_points, parse_uploaded_points
 
 class TestCsvOverlay(unittest.TestCase):
@@ -156,6 +157,13 @@ class TestCsvOverlay(unittest.TestCase):
 
         with self.assertRaisesRegex(TypeError, "coordinate_bounds values must be numeric"):
             parse_uploaded_points(payload, coordinate_bounds=(False, 10))
+
+    def test_parse_uploaded_points_accepts_numpy_coordinate_bounds_values(self):
+        payload = "x,y,z\n1,2,3\n".encode("utf-8")
+
+        parsed = parse_uploaded_points(payload, coordinate_bounds=(np.int64(-10), np.float64(10)))
+
+        self.assertEqual(parsed, {"Uploaded": [(1.0, 2.0, 3.0)]})
 
     def test_downsample_grouped_points_keeps_total_under_limit(self):
         groups = {
