@@ -66,5 +66,9 @@ class UsgsDataHelpersTests(unittest.TestCase):
         with self.assertRaisesRegex(TypeError, "limit must be an integer or None"):
             format_usgs_summary(limit=1.5)
 
+    def test_format_usgs_summary_rejects_too_large_limit(self):
+        with self.assertRaisesRegex(ValueError, "limit must be less than or equal to 5"):
+            format_usgs_summary(limit=6)
+
 if __name__ == "__main__":
     unittest.main()

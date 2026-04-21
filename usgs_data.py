@@ -8,6 +8,7 @@ USGS_UNITS = {
 }
 
 USGS_MINERAL_ORDER = tuple(sorted(USGS_UNITS))
+MAX_SUMMARY_MINERALS = len(USGS_MINERAL_ORDER)
 
 def _ordered_mineral_names(data):
     preferred = [mineral for mineral in USGS_MINERAL_ORDER if mineral in data]
@@ -65,6 +66,10 @@ def format_usgs_summary(limit=None):
             raise TypeError("limit must be an integer or None.")
         if limit <= 0:
             raise ValueError("limit must be greater than 0 when provided.")
+        if limit > MAX_SUMMARY_MINERALS:
+            raise ValueError(
+                f"limit must be less than or equal to {MAX_SUMMARY_MINERALS} when provided."
+            )
 
     data = get_sample_usgs_mineral_data()
     lines = [
