@@ -1,6 +1,16 @@
 import unittest
 import numpy as np
-from generators import generate_petroleum_deposits, generate_realistic_deposits
+from generators import derive_stable_seed, generate_petroleum_deposits, generate_realistic_deposits
+
+class StableSeedTests(unittest.TestCase):
+    def test_derive_stable_seed_normalises_case_and_whitespace(self):
+        first = derive_stable_seed(42, " Gold   Deposit ")
+        second = derive_stable_seed(42, "gold deposit")
+        self.assertEqual(first, second)
+
+    def test_derive_stable_seed_rejects_blank_labels(self):
+        with self.assertRaisesRegex(ValueError, "label must not be empty"):
+            derive_stable_seed(42, "   ")
 
 class GeneratorContractTests(unittest.TestCase):
     def test_mineral_generation_is_deterministic(self):

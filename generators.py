@@ -22,7 +22,7 @@ def derive_stable_seed(base_seed, label):
 def _normalize_seed_label(label):
     if not isinstance(label, str):
         raise TypeError("label must be a string.")
-    normalized = label.strip()
+    normalized = " ".join(label.split()).casefold()
     if not normalized:
         raise ValueError("label must not be empty.")
     return normalized
