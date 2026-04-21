@@ -92,17 +92,18 @@ def parse_uploaded_points(uploaded_bytes, coordinate_bounds=None):
     row_count = 0
     for row in reader:
         row_count += 1
+        row_number = reader.line_num - 1
         key_map = {k.strip().lower(): v for k, v in row.items() if k is not None}
 
         if not any((value or "").strip() for value in key_map.values()):
             continue
 
-        x_val = _parse_coordinate_value(key_map, "x", row_count)
-        y_val = _parse_coordinate_value(key_map, "y", row_count)
-        z_val = _parse_coordinate_value(key_map, "z", row_count)
-        _validate_coordinate_bounds(x_val, y_val, z_val, bounds, row_count)
+        x_val = _parse_coordinate_value(key_map, "x", row_number)
+        y_val = _parse_coordinate_value(key_map, "y", row_number)
+        z_val = _parse_coordinate_value(key_map, "z", row_number)
+        _validate_coordinate_bounds(x_val, y_val, z_val, bounds, row_number)
 
-        label = _normalize_label(key_map.get("label"), row_count)
+        label = _normalize_label(key_map.get("label"), row_number)
         groups.setdefault(label, []).append((x_val, y_val, z_val))
 
     if row_count == 0:

@@ -67,6 +67,7 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 - Added upper-bound validation for USGS summary limits to keep output constrained and predictable.
 - Added a structured USGS latest-values helper for cleaner consumption in views and exports.
 - Improved deterministic seed labels by normalising case and collapsing extra whitespace.
+- Improved CSV validation row reporting to align with source data lines when blank spacer rows are present.
 
 ### 2026-04-20
 - Hardened deterministic seed derivation by validating and normalizing per-label seed keys.

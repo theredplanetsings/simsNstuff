@@ -45,6 +45,12 @@ class TestCsvOverlay(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Invalid numeric values at row 1"):
             parse_uploaded_points(payload)
 
+    def test_parse_uploaded_points_reports_row_with_blank_spacer_lines(self):
+        payload = "x,y,z\n , , \n1,two,3\n".encode("utf-8")
+
+        with self.assertRaisesRegex(ValueError, "Invalid numeric values at row 2"):
+            parse_uploaded_points(payload)
+
     def test_parse_uploaded_points_rejects_blank_rows(self):
         payload = "x,y,z\n\n".encode("utf-8")
 
