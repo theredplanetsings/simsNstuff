@@ -21,6 +21,8 @@ def downsample_grouped_points(groups, max_points, seed):
     if max_points <= 0:
         raise ValueError("max_points must be greater than 0.")
 
+    _validate_groups_for_downsampling(groups)
+
     total_points = sum(len(points) for points in groups.values())
     if total_points <= max_points:
         return {label: list(points) for label, points in groups.items()}
@@ -42,6 +44,20 @@ def downsample_grouped_points(groups, max_points, seed):
         sampled[label].append(point)
 
     return {label: points for label, points in sampled.items() if points}
+
+def _validate_groups_for_downsampling(groups):
+    for label, points in groups.items():
+        if not isinstance(points, (list, tuple)):
+            raise TypeError(f"points for label '{label}' must be a list or tuple.")
+        for point in points:
+            if not isinstance(point, (list, tuple)) or len(point) != 3:
+                raise ValueError(f"invalid point shape for label '{label}'; expected (x, y, z).")
+            x_val, y_val, z_val = point
+            for axis_value in (x_val, y_val, z_val):
+                if isinstance(axis_value, bool) or not isinstance(axis_value, (int, float, np.integer, np.floating)):
+                    raise TypeError(f"point coordinates for label '{label}' must be numeric.")
+                if not math.isfinite(axis_value):
+                    raise ValueError(f"point coordinates for label '{label}' must be finite.")
 
 def parse_uploaded_points(uploaded_bytes, coordinate_bounds=None):
     """Parse uploaded CSV bytes into grouped points by label.

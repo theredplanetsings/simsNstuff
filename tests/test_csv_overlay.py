@@ -195,5 +195,13 @@ class TestCsvOverlay(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "max_points must be greater than 0"):
             downsample_grouped_points({"A": [(1.0, 2.0, 3.0)]}, max_points=0, seed=42)
 
+    def test_downsample_grouped_points_rejects_bad_point_shape(self):
+        with self.assertRaisesRegex(ValueError, "invalid point shape"):
+            downsample_grouped_points({"A": [(1.0, 2.0)]}, max_points=1, seed=42)
+
+    def test_downsample_grouped_points_rejects_non_finite_coordinates(self):
+        with self.assertRaisesRegex(ValueError, "must be finite"):
+            downsample_grouped_points({"A": [(1.0, float("nan"), 3.0)]}, max_points=1, seed=42)
+
 if __name__ == "__main__":
     unittest.main()

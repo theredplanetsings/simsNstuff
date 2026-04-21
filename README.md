@@ -63,6 +63,7 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 
 ### 2026-04-21
 - Expanded CSV coordinate-bound validation to accept NumPy numeric scalars used in scientific workflows.
+- Added strict grouped-point validation before downsampling to reject malformed or non-finite coordinates early.
 
 ### 2026-04-20
 - Hardened deterministic seed derivation by validating and normalizing per-label seed keys.
