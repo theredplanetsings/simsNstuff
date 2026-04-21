@@ -91,3 +91,37 @@ def format_usgs_summary(limit=None):
         lines.append(f"- **{mineral} ({latest_year})**: {latest_value:,} {unit}")
 
     return "\n".join(lines)
+
+def get_latest_usgs_values(limit=None):
+    """Return latest-year value records for each commodity in stable display order."""
+    if limit is not None:
+        if not isinstance(limit, int) or isinstance(limit, bool):
+            raise TypeError("limit must be an integer or None.")
+        if limit <= 0:
+            raise ValueError("limit must be greater than 0 when provided.")
+        if limit > MAX_SUMMARY_MINERALS:
+            raise ValueError(
+                f"limit must be less than or equal to {MAX_SUMMARY_MINERALS} when provided."
+            )
+
+    data = get_sample_usgs_mineral_data()
+    mineral_names = _ordered_mineral_names(data)
+    if limit is not None:
+        mineral_names = mineral_names[:limit]
+
+    records = []
+    for mineral in mineral_names:
+        series = data[mineral]
+        if not series:
+            continue
+        latest_year, latest_value = series[-1]
+        records.append(
+            {
+                "mineral": mineral,
+                "year": latest_year,
+                "value": latest_value,
+                "unit": USGS_UNITS.get(mineral, "units"),
+            }
+        )
+
+    return records

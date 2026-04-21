@@ -65,6 +65,7 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 - Expanded CSV coordinate-bound validation to accept NumPy numeric scalars used in scientific workflows.
 - Added strict grouped-point validation before downsampling to reject malformed or non-finite coordinates early.
 - Added upper-bound validation for USGS summary limits to keep output constrained and predictable.
+- Added a structured USGS latest-values helper for cleaner consumption in views and exports.
 
 ### 2026-04-20
 - Hardened deterministic seed derivation by validating and normalizing per-label seed keys.

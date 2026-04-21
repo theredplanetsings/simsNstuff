@@ -1,6 +1,6 @@
 import unittest
 from real_data import format_production_summary, get_sample_production_data
-from usgs_data import format_usgs_summary, get_sample_usgs_mineral_data
+from usgs_data import format_usgs_summary, get_latest_usgs_values, get_sample_usgs_mineral_data
 
 class RealDataHelpersTests(unittest.TestCase):
     def test_get_sample_production_data_has_expected_series(self):
@@ -69,6 +69,17 @@ class UsgsDataHelpersTests(unittest.TestCase):
     def test_format_usgs_summary_rejects_too_large_limit(self):
         with self.assertRaisesRegex(ValueError, "limit must be less than or equal to 5"):
             format_usgs_summary(limit=6)
+
+    def test_get_latest_usgs_values_returns_stable_order(self):
+        latest = get_latest_usgs_values(limit=2)
+
+        self.assertEqual(len(latest), 2)
+        self.assertEqual(latest[0]["mineral"], "Coal")
+        self.assertEqual(latest[1]["mineral"], "Copper")
+
+    def test_get_latest_usgs_values_rejects_invalid_limit(self):
+        with self.assertRaisesRegex(TypeError, "limit must be an integer or None"):
+            get_latest_usgs_values(limit=1.5)
 
 if __name__ == "__main__":
     unittest.main()
