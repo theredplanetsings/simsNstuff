@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 
 from app_views import (
     _add_grouped_scatter3d_traces,
+    _build_usgs_latest_rows,
     _build_cross_section_figure,
     _resolve_preset,
     build_group_summary_csv,
@@ -174,6 +175,14 @@ class MetadataJsonTests(unittest.TestCase):
         self.assertEqual(data["view"], "Mineral Deposits")
         self.assertEqual(data["parameters"]["seed"], 42)
         self.assertIn("generated_at", data)
+
+class UsgsRowsTests(unittest.TestCase):
+    def test_build_usgs_latest_rows_uses_stable_order(self):
+        rows = _build_usgs_latest_rows(limit=2)
+
+        self.assertEqual(rows[0][0], "Coal")
+        self.assertEqual(rows[1][0], "Copper")
+        self.assertEqual(len(rows[0]), 3)
 
 if __name__ == "__main__":
     unittest.main()

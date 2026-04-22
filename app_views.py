@@ -8,7 +8,7 @@ import streamlit as st
 from csv_overlay import build_uploaded_points_template, downsample_grouped_points, parse_uploaded_points
 from generators import generate_petroleum_deposits, generate_realistic_deposits
 from real_data import format_production_summary, get_sample_production_data
-from usgs_data import format_usgs_summary, get_sample_usgs_mineral_data
+from usgs_data import format_usgs_summary, get_latest_usgs_values, get_sample_usgs_mineral_data
 
 MINERALS = {
     "Silver": "gray",
@@ -145,6 +145,10 @@ def _coerce_xyz_array(coords):
     if array.ndim != 2 or array.shape[1] != 3:
         return None
     return array
+
+def _build_usgs_latest_rows(limit=None):
+    records = get_latest_usgs_values(limit=limit)
+    return [(entry["mineral"], entry["year"], entry["value"]) for entry in records]
 
 def _apply_3d_layout(
     fig,
@@ -684,13 +688,7 @@ def render_real_data_view():
         )
     else:
         st.markdown(format_usgs_summary())
-        usgs_data = _get_cached_usgs_data()
-
-        minerals_latest = []
-        for mineral_name in sorted(usgs_data):
-            series = usgs_data[mineral_name]
-            year, value = series[-1]
-            minerals_latest.append((mineral_name, year, value))
+        minerals_latest = _build_usgs_latest_rows()
 
         fig_usgs = go.Figure(
             data=[
