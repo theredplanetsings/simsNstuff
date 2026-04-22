@@ -66,6 +66,7 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 - Switched the USGS chart path to consume the stable latest-values helper instead of ad hoc extraction logic.
 - Added support for comment-prefixed lines (`# ...`) in uploaded CSV files for easier field-note workflows.
 - Improved upload downsampling fairness so non-empty labels retain representation when the point budget permits.
+- Added explicit generation-size safety caps for mineral and petroleum helper APIs to prevent accidental oversized runs.
 
 ### 2026-04-21
 - Expanded CSV coordinate-bound validation to accept NumPy numeric scalars used in scientific workflows.

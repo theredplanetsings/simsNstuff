@@ -54,6 +54,10 @@ class GeneratorContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "n_deposits must be greater than or equal to 0"):
             generate_realistic_deposits("Copper", "Orebody systems", -1, 11, 1.2, 4)
 
+    def test_mineral_generation_rejects_excessive_deposit_count(self):
+        with self.assertRaisesRegex(ValueError, "n_deposits must be less than or equal to 10000"):
+            generate_realistic_deposits("Copper", "Orebody systems", 10001, 11, 1.2, 4)
+
     def test_mineral_generation_rejects_non_integer_complexity(self):
         with self.assertRaisesRegex(TypeError, "complexity must be an integer"):
             generate_realistic_deposits("Copper", "Orebody systems", 10, 11, 1.2, 2.5)
@@ -126,6 +130,10 @@ class GeneratorContractTests(unittest.TestCase):
     def test_petroleum_generation_rejects_negative_reservoir_count(self):
         with self.assertRaisesRegex(ValueError, "reservoir_count must be greater than or equal to 0"):
             generate_petroleum_deposits("Oil", 50, -1, 0.6, 42)
+
+    def test_petroleum_generation_rejects_excessive_reservoir_count(self):
+        with self.assertRaisesRegex(ValueError, "reservoir_count must be less than or equal to 1000"):
+            generate_petroleum_deposits("Oil", 50, 1001, 0.6, 42)
 
     def test_petroleum_generation_rejects_boolean_reservoir_count(self):
         with self.assertRaisesRegex(TypeError, "reservoir_count must be an integer"):

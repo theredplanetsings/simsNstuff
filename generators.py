@@ -10,6 +10,8 @@ SUPPORTED_MINERAL_MODES = {
 }
 
 SUPPORTED_PETROLEUM_TYPES = {"Oil", "Natural Gas", "Oil Shale", "Gas Hydrates"}
+MAX_MINERAL_DEPOSITS = 10000
+MAX_PETROLEUM_RESERVOIRS = 1000
 
 def derive_stable_seed(base_seed, label):
     """Create a deterministic per-label seed from a user-provided base seed."""
@@ -55,6 +57,10 @@ def _validate_positive_int(value, name):
     _validate_non_negative_int(value, name)
     if value == 0:
         raise ValueError(f"{name} must be greater than 0.")
+
+def _validate_max_int(value, name, maximum):
+    if value > maximum:
+        raise ValueError(f"{name} must be less than or equal to {maximum}.")
 
 def _validate_depth_factor(depth_factor):
     if isinstance(depth_factor, (bool, np.bool_)):
@@ -112,6 +118,7 @@ def _unit_vector(vector, fallback):
 def generate_realistic_deposits(mineral, mode, n_deposits, seed, depth_factor, complexity, noise_scale=0.0):
     """Generate geologically realistic mineral deposits."""
     _validate_non_negative_int(n_deposits, "n_deposits")
+    _validate_max_int(n_deposits, "n_deposits", MAX_MINERAL_DEPOSITS)
     _validate_positive_int(complexity, "complexity")
     _validate_depth_factor(depth_factor)
     _validate_non_negative_real(noise_scale, "noise_scale")
@@ -248,6 +255,7 @@ def generate_petroleum_deposits(deposit_type, basin_size, reservoir_count, trap_
     """Generate realistic petroleum deposits."""
     _validate_positive_int(basin_size, "basin_size")
     _validate_non_negative_int(reservoir_count, "reservoir_count")
+    _validate_max_int(reservoir_count, "reservoir_count", MAX_PETROLEUM_RESERVOIRS)
     _validate_trap_efficiency(trap_efficiency)
     _validate_non_negative_real(noise_scale, "noise_scale")
 
