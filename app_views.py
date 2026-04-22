@@ -208,6 +208,11 @@ def _add_grouped_scatter3d_traces(
 
 def build_points_csv(points_by_label, unit_label):
     """Convert grouped 3D points into CSV text for download."""
+    if not isinstance(unit_label, str):
+        raise TypeError("unit_label must be a string.")
+    if not unit_label.strip():
+        raise ValueError("unit_label must not be empty.")
+
     output = io.StringIO()
     writer = csv.writer(output)
     writer.writerow(["deposit_type", "x", "y", "z", "z_unit"])

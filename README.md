@@ -67,6 +67,7 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 - Added support for comment-prefixed lines (`# ...`) in uploaded CSV files for easier field-note workflows.
 - Improved upload downsampling fairness so non-empty labels retain representation when the point budget permits.
 - Added explicit generation-size safety caps for mineral and petroleum helper APIs to prevent accidental oversized runs.
+- Hardened point-export CSV building by validating unit labels before writing downloadable files.
 
 ### 2026-04-21
 - Expanded CSV coordinate-bound validation to accept NumPy numeric scalars used in scientific workflows.

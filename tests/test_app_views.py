@@ -56,6 +56,14 @@ class BuildPointsCsvTests(unittest.TestCase):
 
         self.assertEqual(len(lines), 2)
         self.assertIn("Good,1.000000,2.000000,3.000000,m", lines)
+
+    def test_build_points_csv_rejects_non_string_unit_label(self):
+        with self.assertRaisesRegex(TypeError, "unit_label must be a string"):
+            build_points_csv({"Mine A": [(1, 2, 3)]}, None)
+
+    def test_build_points_csv_rejects_blank_unit_label(self):
+        with self.assertRaisesRegex(ValueError, "unit_label must not be empty"):
+            build_points_csv({"Mine A": [(1, 2, 3)]}, "   ")
 class FormatPointGroupSummaryTests(unittest.TestCase):
     def test_format_point_group_summary_handles_singular(self):
         summary = format_point_group_summary(total_points=1, group_count=1)
