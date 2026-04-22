@@ -33,15 +33,31 @@ def downsample_grouped_points(groups, max_points, seed):
     rng = np.random.default_rng(seed)
     sampled = {label: [] for label in groups}
 
+    non_empty_labels = [label for label in sorted(groups) if len(groups[label]) > 0]
+    guaranteed_points = []
+    if max_points >= len(non_empty_labels):
+        for label in non_empty_labels:
+            point_index = int(rng.integers(0, len(groups[label])))
+            point = groups[label][point_index]
+            sampled[label].append(point)
+            guaranteed_points.append((label, point_index))
+
+    guaranteed_lookup = set(guaranteed_points)
+
     all_points = []
     for label in sorted(groups):
-        all_points.extend((label, point) for point in groups[label])
+        for idx, point in enumerate(groups[label]):
+            if (label, idx) in guaranteed_lookup:
+                continue
+            all_points.append((label, point))
 
-    indices = np.arange(len(all_points))
-    keep = rng.choice(indices, size=max_points, replace=False)
-    for idx in np.sort(keep):
-        label, point = all_points[idx]
-        sampled[label].append(point)
+    remaining_slots = max_points - len(guaranteed_points)
+    if remaining_slots > 0:
+        indices = np.arange(len(all_points))
+        keep = rng.choice(indices, size=remaining_slots, replace=False)
+        for idx in np.sort(keep):
+            label, point = all_points[idx]
+            sampled[label].append(point)
 
     return {label: points for label, points in sampled.items() if points}
 

@@ -215,6 +215,29 @@ class TestCsvOverlay(unittest.TestCase):
 
         self.assertEqual(first, second)
 
+    def test_downsample_grouped_points_keeps_one_per_label_when_possible(self):
+        groups = {
+            "A": [(1.0, 0.0, 0.0), (2.0, 0.0, 0.0)],
+            "B": [(3.0, 0.0, 0.0), (4.0, 0.0, 0.0)],
+            "C": [(5.0, 0.0, 0.0), (6.0, 0.0, 0.0)],
+        }
+
+        sampled = downsample_grouped_points(groups, max_points=3, seed=42)
+
+        self.assertEqual(set(sampled.keys()), {"A", "B", "C"})
+        self.assertTrue(all(len(points) == 1 for points in sampled.values()))
+
+    def test_downsample_grouped_points_can_drop_labels_when_budget_too_small(self):
+        groups = {
+            "A": [(1.0, 0.0, 0.0)],
+            "B": [(2.0, 0.0, 0.0)],
+            "C": [(3.0, 0.0, 0.0)],
+        }
+
+        sampled = downsample_grouped_points(groups, max_points=2, seed=42)
+
+        self.assertEqual(sum(len(v) for v in sampled.values()), 2)
+
     def test_downsample_grouped_points_passthrough_when_under_limit(self):
         groups = {"A": [(1.0, 2.0, 3.0)]}
 
