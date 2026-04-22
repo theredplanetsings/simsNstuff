@@ -277,6 +277,13 @@ def build_group_summary_csv(summaries):
     return output.getvalue()
 
 def build_metadata_json(view_name, parameters):
+    if not isinstance(view_name, str):
+        raise TypeError("view_name must be a string.")
+    if not view_name.strip():
+        raise ValueError("view_name must not be empty.")
+    if not isinstance(parameters, dict):
+        raise TypeError("parameters must be a dictionary.")
+
     payload = {
         "view": view_name,
         "generated_at": datetime.now(timezone.utc).isoformat(),

@@ -184,6 +184,14 @@ class MetadataJsonTests(unittest.TestCase):
         self.assertEqual(data["parameters"]["seed"], 42)
         self.assertIn("generated_at", data)
 
+    def test_build_metadata_json_rejects_blank_view_name(self):
+        with self.assertRaisesRegex(ValueError, "view_name must not be empty"):
+            build_metadata_json("   ", {"seed": 42})
+
+    def test_build_metadata_json_rejects_non_dict_parameters(self):
+        with self.assertRaisesRegex(TypeError, "parameters must be a dictionary"):
+            build_metadata_json("Mineral Deposits", [("seed", 42)])
+
 class UsgsRowsTests(unittest.TestCase):
     def test_build_usgs_latest_rows_uses_stable_order(self):
         rows = _build_usgs_latest_rows(limit=2)
