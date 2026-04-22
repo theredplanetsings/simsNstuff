@@ -5,6 +5,7 @@ SERIES_CONFIG = (
     ("natural_gas_production", "Natural Gas", "Bcf/day", "Billion cubic feet/day"),
 )
 MAX_SUMMARY_YEARS = 5
+MAX_LATEST_SERIES = len(SERIES_CONFIG)
 
 def _format_compact_number(value):
     formatted = f"{float(value):,.2f}"
@@ -63,3 +64,34 @@ def format_production_summary(limit=3):
     for key, label, short_unit, long_unit in SERIES_CONFIG:
         lines.extend(_format_series_block(label, data[key], short_unit, long_unit, limit))
     return "\n".join(lines).rstrip()
+
+def get_latest_production_values(limit=None):
+    """Return latest-year value records for production series in stable display order."""
+    if limit is not None:
+        if not isinstance(limit, int) or isinstance(limit, bool):
+            raise TypeError("limit must be an integer or None.")
+        if limit <= 0:
+            raise ValueError("limit must be greater than 0 when provided.")
+        if limit > MAX_LATEST_SERIES:
+            raise ValueError(
+                f"limit must be less than or equal to {MAX_LATEST_SERIES} when provided."
+            )
+
+    data = get_sample_production_data()
+    selected_series = SERIES_CONFIG if limit is None else SERIES_CONFIG[:limit]
+
+    records = []
+    for key, label, short_unit, long_unit in selected_series:
+        latest_year, latest_value = data[key][-1]
+        records.append(
+            {
+                "series": key,
+                "label": label,
+                "year": latest_year,
+                "value": latest_value,
+                "short_unit": short_unit,
+                "long_unit": long_unit,
+            }
+        )
+
+    return records

@@ -1,5 +1,5 @@
 import unittest
-from real_data import format_production_summary, get_sample_production_data
+from real_data import format_production_summary, get_latest_production_values, get_sample_production_data
 from usgs_data import format_usgs_summary, get_latest_usgs_values, get_sample_usgs_mineral_data
 
 class RealDataHelpersTests(unittest.TestCase):
@@ -31,6 +31,21 @@ class RealDataHelpersTests(unittest.TestCase):
     def test_format_production_summary_rejects_too_large_limit(self):
         with self.assertRaisesRegex(ValueError, "limit must be less than or equal to 5"):
             format_production_summary(limit=6)
+
+    def test_get_latest_production_values_returns_stable_order(self):
+        latest = get_latest_production_values(limit=2)
+
+        self.assertEqual(len(latest), 2)
+        self.assertEqual(latest[0]["series"], "coal_production")
+        self.assertEqual(latest[1]["series"], "crude_oil_production")
+
+    def test_get_latest_production_values_rejects_invalid_limit(self):
+        with self.assertRaisesRegex(TypeError, "limit must be an integer or None"):
+            get_latest_production_values(limit=1.5)
+
+    def test_get_latest_production_values_rejects_too_large_limit(self):
+        with self.assertRaisesRegex(ValueError, "limit must be less than or equal to 3"):
+            get_latest_production_values(limit=4)
 
 class UsgsDataHelpersTests(unittest.TestCase):
     def test_get_sample_usgs_data_contains_expected_commodities(self):
