@@ -69,6 +69,7 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 - Added explicit generation-size safety caps for mineral and petroleum helper APIs to prevent accidental oversized runs.
 - Hardened point-export CSV building by validating unit labels before writing downloadable files.
 - Added strict metadata export validation for view names and parameter payload shape.
+- Removed the non-functional sidebar feature list on the homepage to reduce confusion and keep controls task-focused.
 
 ### 2026-04-21
 - Expanded CSV coordinate-bound validation to accept NumPy numeric scalars used in scientific workflows.

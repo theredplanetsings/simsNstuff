@@ -304,13 +304,7 @@ def render_view_header(title, subtitle):
     st.caption(subtitle)
 
 def render_sidebar_intro():
-    st.sidebar.markdown("### Available Features")
-    st.sidebar.caption("Pick a view, then use only the controls that apply to that scenario.")
-    st.sidebar.markdown("- Mineral deposit modelling")
-    st.sidebar.markdown("- Petroleum deposit modelling")
-    st.sidebar.markdown("- Real Data: EIA energy trends")
-    st.sidebar.markdown("- Real Data: USGS mineral snapshot")
-    st.sidebar.markdown("- CSV upload for custom mine/well overlays")
+    return None
 
 def render_mineral_view():
     render_view_header(

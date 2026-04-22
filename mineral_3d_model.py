@@ -1,5 +1,5 @@
 import streamlit as st
-from app_views import render_mineral_view, render_petroleum_view, render_real_data_view, render_sidebar_intro
+from app_views import render_mineral_view, render_petroleum_view, render_real_data_view
 
 def main():
     st.set_page_config(page_title="Sims N Stuff", layout="wide", initial_sidebar_state="expanded")
@@ -7,8 +7,6 @@ def main():
     st.title("Sims N Stuff")
     st.markdown("Visualise realistic 3D deposits of minerals and petroleum using advanced geological modelling.")
     st.caption("Pick a view above, then use the sidebar to adjust only the controls that apply to that mode.")
-
-    render_sidebar_intro()
 
     deposit_type = st.radio(
         "Select view:",
