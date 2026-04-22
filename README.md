@@ -64,6 +64,7 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 ### 2026-04-22
 - Added a latest-values helper for EIA sample series to support stable tabular/chart consumption paths.
 - Switched the USGS chart path to consume the stable latest-values helper instead of ad hoc extraction logic.
+- Added support for comment-prefixed lines (`# ...`) in uploaded CSV files for easier field-note workflows.
 
 ### 2026-04-21
 - Expanded CSV coordinate-bound validation to accept NumPy numeric scalars used in scientific workflows.

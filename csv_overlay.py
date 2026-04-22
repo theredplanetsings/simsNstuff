@@ -77,6 +77,8 @@ def parse_uploaded_points(uploaded_bytes, coordinate_bounds=None):
     except UnicodeDecodeError as exc:
         raise ValueError("CSV must be UTF-8 encoded.") from exc
 
+    text = _strip_comment_lines(text)
+
     reader = csv.DictReader(io.StringIO(text))
 
     if reader.fieldnames is None:
@@ -113,6 +115,11 @@ def parse_uploaded_points(uploaded_bytes, coordinate_bounds=None):
         raise ValueError("CSV contains no valid coordinate rows.")
 
     return groups
+
+def _strip_comment_lines(text):
+    lines = text.splitlines()
+    filtered = [line for line in lines if not line.lstrip().startswith("#")]
+    return "\n".join(filtered)
 
 def _normalize_coordinate_bounds(coordinate_bounds):
     if coordinate_bounds is None:
