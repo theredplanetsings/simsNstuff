@@ -146,7 +146,10 @@ def _build_cross_section_figure(points_by_label, axis_choice, title):
     return fig
 
 def _coerce_xyz_array(coords):
-    array = np.asarray(coords, dtype=float)
+    try:
+        array = np.asarray(coords, dtype=float)
+    except (TypeError, ValueError):
+        return None
     if array.size == 0:
         return None
     if array.ndim != 2 or array.shape[1] != 3:

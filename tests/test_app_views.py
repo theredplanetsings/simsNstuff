@@ -57,6 +57,13 @@ class BuildPointsCsvTests(unittest.TestCase):
         self.assertEqual(len(lines), 2)
         self.assertIn("Good,1.000000,2.000000,3.000000,m", lines)
 
+    def test_build_points_csv_skips_non_numeric_coordinate_groups(self):
+        csv_text = build_points_csv({"Good": [(1, 2, 3)], "Bad": [("x", 2, 3)]}, "m")
+        lines = csv_text.strip().splitlines()
+
+        self.assertEqual(len(lines), 2)
+        self.assertIn("Good,1.000000,2.000000,3.000000,m", lines)
+
     def test_build_points_csv_rejects_non_string_unit_label(self):
         with self.assertRaisesRegex(TypeError, "unit_label must be a string"):
             build_points_csv({"Mine A": [(1, 2, 3)]}, None)
@@ -196,6 +203,12 @@ class GroupedScatterTraceTests(unittest.TestCase):
 class SummariesRobustnessTests(unittest.TestCase):
     def test_summarize_point_groups_skips_malformed_coordinates(self):
         summaries = summarize_point_groups({"Good": [[1, 2, 3]], "Bad": [[1, 2]]})
+
+        self.assertEqual(len(summaries), 1)
+        self.assertEqual(summaries[0]["Label"], "Good")
+
+    def test_summarize_point_groups_skips_non_numeric_coordinates(self):
+        summaries = summarize_point_groups({"Good": [[1, 2, 3]], "Bad": [["x", 2, 3]]})
 
         self.assertEqual(len(summaries), 1)
         self.assertEqual(summaries[0]["Label"], "Good")

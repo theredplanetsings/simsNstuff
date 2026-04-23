@@ -69,6 +69,7 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 - Skipped empty production series in the latest-values helper to keep the real-data view resilient.
 - Let USGS summary helpers tolerate missing commodity keys without raising errors.
 - Let stable seed derivation accept integral seed strings while still rejecting non-integral values.
+- Skipped non-numeric coordinate groups when summarizing or exporting grouped 3D point data.
 
 ### 2026-04-22
 - Added a latest-values helper for EIA sample series to support stable tabular/chart consumption paths.
