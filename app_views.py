@@ -71,7 +71,11 @@ PETROLEUM_PRESETS = {
 
 def _resolve_preset(selection, presets):
     chosen = presets.get(selection)
-    return chosen if chosen is not None else {}
+    if chosen is None:
+        return {}
+    if not isinstance(chosen, dict):
+        raise TypeError("preset values must be dictionaries or None.")
+    return dict(chosen)
 
 def _render_model_assumptions(z_label, detail_line):
     with st.expander("Model assumptions and units"):

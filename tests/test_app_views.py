@@ -85,6 +85,19 @@ class ResolvePresetTests(unittest.TestCase):
     def test_resolve_preset_returns_empty_dict_for_unknown(self):
         presets = {"Custom": None}
         self.assertEqual(_resolve_preset("Unknown", presets), {})
+
+    def test_resolve_preset_returns_copy(self):
+        presets = {"A": {"foo": 1}}
+        resolved = _resolve_preset("A", presets)
+
+        resolved["foo"] = 99
+        self.assertEqual(presets["A"]["foo"], 1)
+
+    def test_resolve_preset_rejects_non_dict_values(self):
+        presets = {"A": ["bad"]}
+
+        with self.assertRaisesRegex(TypeError, "preset values must be dictionaries or None"):
+            _resolve_preset("A", presets)
 class SummarizePointGroupsTests(unittest.TestCase):
     def test_summarize_point_groups_builds_expected_metrics(self):
         summaries = summarize_point_groups({"Mine A": [(0.0, 1.0, -10.0), (2.0, 3.0, -6.0)]})
