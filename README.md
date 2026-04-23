@@ -66,6 +66,7 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 - Added explicit validation for cross-section axis selection to reject unsupported values early.
 - Hardened grouped-summary CSV export by validating both top-level and per-row input types.
 - Made uploaded-point downsampling enforce seed type validation even on passthrough-sized datasets.
+- Skipped empty production series in the latest-values helper to keep the real-data view resilient.
 
 ### 2026-04-22
 - Added a latest-values helper for EIA sample series to support stable tabular/chart consumption paths.

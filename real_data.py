@@ -82,7 +82,10 @@ def get_latest_production_values(limit=None):
 
     records = []
     for key, label, short_unit, long_unit in selected_series:
-        latest_year, latest_value = data[key][-1]
+        series = data.get(key, [])
+        if not series:
+            continue
+        latest_year, latest_value = series[-1]
         records.append(
             {
                 "series": key,

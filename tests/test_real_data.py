@@ -47,6 +47,21 @@ class RealDataHelpersTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "limit must be less than or equal to 3"):
             get_latest_production_values(limit=4)
 
+    def test_get_latest_production_values_skips_empty_series(self):
+        import real_data
+
+        original = real_data.get_sample_production_data
+        real_data.get_sample_production_data = lambda: {
+            "coal_production": [],
+            "crude_oil_production": [("2024", 1.0)],
+            "natural_gas_production": [("2024", 2.0)],
+        }
+        try:
+            latest = get_latest_production_values()
+            self.assertEqual([entry["series"] for entry in latest], ["crude_oil_production", "natural_gas_production"])
+        finally:
+            real_data.get_sample_production_data = original
+
 class UsgsDataHelpersTests(unittest.TestCase):
     def test_get_sample_usgs_data_contains_expected_commodities(self):
         data = get_sample_usgs_mineral_data()
