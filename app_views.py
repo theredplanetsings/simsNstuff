@@ -275,11 +275,16 @@ def summarize_point_groups(points_by_label):
 
 def build_group_summary_csv(summaries):
     """Convert tabular summary rows into CSV text for download."""
+    if not isinstance(summaries, list):
+        raise TypeError("summaries must be a list of dictionaries.")
+
     output = io.StringIO()
     fieldnames = ["Label", "Count", "Min Z", "Max Z", "Mean Z", "Centroid X", "Centroid Y", "Centroid Z"]
     writer = csv.DictWriter(output, fieldnames=fieldnames)
     writer.writeheader()
     for row in summaries:
+        if not isinstance(row, dict):
+            raise TypeError("each summary row must be a dictionary.")
         writer.writerow({key: row.get(key, "") for key in fieldnames})
     return output.getvalue()
 

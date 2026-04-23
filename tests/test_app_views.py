@@ -143,6 +143,14 @@ class BuildGroupSummaryCsvTests(unittest.TestCase):
             "Label,Count,Min Z,Max Z,Mean Z,Centroid X,Centroid Y,Centroid Z",
         )
 
+    def test_build_group_summary_csv_rejects_non_list_input(self):
+        with self.assertRaisesRegex(TypeError, "summaries must be a list of dictionaries"):
+            build_group_summary_csv({"Label": "A"})
+
+    def test_build_group_summary_csv_rejects_non_dict_rows(self):
+        with self.assertRaisesRegex(TypeError, "each summary row must be a dictionary"):
+            build_group_summary_csv(["bad-row"])
+
 class CrossSectionFigureTests(unittest.TestCase):
     def test_cross_section_uses_x_axis_for_xz(self):
         points = {"A": np.array([[1.0, 2.0, -3.0]])}

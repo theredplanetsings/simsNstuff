@@ -64,6 +64,7 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 ### 2026-04-23
 - Returned defensive copies from preset selection helpers to prevent accidental mutation of shared defaults.
 - Added explicit validation for cross-section axis selection to reject unsupported values early.
+- Hardened grouped-summary CSV export by validating both top-level and per-row input types.
 
 ### 2026-04-22
 - Added a latest-values helper for EIA sample series to support stable tabular/chart consumption paths.
