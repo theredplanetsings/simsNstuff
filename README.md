@@ -71,6 +71,7 @@ The app is deployed on Streamlit Cloud and requires a `requirements.txt` file co
 - Let stable seed derivation accept integral seed strings while still rejecting non-integral values.
 - Skipped non-numeric coordinate groups when summarizing or exporting grouped 3D point data.
 - Added an explicit container-type check for grouped point CSV exports.
+- Let the EIA summary formatter skip missing series keys instead of failing.
 
 ### 2026-04-22
 - Added a latest-values helper for EIA sample series to support stable tabular/chart consumption paths.

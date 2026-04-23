@@ -62,7 +62,10 @@ def format_production_summary(limit=3):
 
     lines = ["**U.S. Production Trends (2020-2024)**", ""]
     for key, label, short_unit, long_unit in SERIES_CONFIG:
-        lines.extend(_format_series_block(label, data[key], short_unit, long_unit, limit))
+        series = data.get(key, [])
+        if not series:
+            continue
+        lines.extend(_format_series_block(label, series, short_unit, long_unit, limit))
     return "\n".join(lines).rstrip()
 
 def get_latest_production_values(limit=None):

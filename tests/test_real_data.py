@@ -32,6 +32,22 @@ class RealDataHelpersTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "limit must be less than or equal to 5"):
             format_production_summary(limit=6)
 
+    def test_format_production_summary_skips_missing_series(self):
+        import real_data
+
+        original = real_data.get_sample_production_data
+        real_data.get_sample_production_data = lambda: {
+            "coal_production": [("2024", 1.0)],
+            "natural_gas_production": [("2024", 2.0)],
+        }
+        try:
+            summary = format_production_summary(limit=3)
+            self.assertIn("Coal Production", summary)
+            self.assertNotIn("Crude Oil", summary)
+            self.assertIn("Natural Gas", summary)
+        finally:
+            real_data.get_sample_production_data = original
+
     def test_get_latest_production_values_returns_stable_order(self):
         latest = get_latest_production_values(limit=2)
 
