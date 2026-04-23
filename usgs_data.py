@@ -83,7 +83,7 @@ def format_usgs_summary(limit=None):
         mineral_names = mineral_names[:limit]
 
     for mineral in mineral_names:
-        series = data[mineral]
+        series = data.get(mineral, [])
         if not series:
             continue
         latest_year, latest_value = series[-1]
@@ -111,7 +111,7 @@ def get_latest_usgs_values(limit=None):
 
     records = []
     for mineral in mineral_names:
-        series = data[mineral]
+        series = data.get(mineral, [])
         if not series:
             continue
         latest_year, latest_value = series[-1]

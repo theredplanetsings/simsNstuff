@@ -111,5 +111,22 @@ class UsgsDataHelpersTests(unittest.TestCase):
         with self.assertRaisesRegex(TypeError, "limit must be an integer or None"):
             get_latest_usgs_values(limit=1.5)
 
+    def test_usgs_helpers_skip_missing_series(self):
+        import usgs_data
+
+        original = usgs_data.get_sample_usgs_mineral_data
+        usgs_data.get_sample_usgs_mineral_data = lambda: {
+            "Gold": [("2024", 1)],
+            "Copper": [],
+        }
+        try:
+            summary = format_usgs_summary()
+            latest = get_latest_usgs_values()
+            self.assertIn("Gold", summary)
+            self.assertNotIn("Copper", summary)
+            self.assertEqual([entry["mineral"] for entry in latest], ["Gold"])
+        finally:
+            usgs_data.get_sample_usgs_mineral_data = original
+
 if __name__ == "__main__":
     unittest.main()
