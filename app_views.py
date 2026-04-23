@@ -106,6 +106,9 @@ def _build_line_figure(years, values, name, line_color, title, yaxis_title):
     return fig
 
 def _build_cross_section_figure(points_by_label, axis_choice, title):
+    if axis_choice not in {"X-Z", "Y-Z"}:
+        raise ValueError("axis_choice must be 'X-Z' or 'Y-Z'.")
+
     fig = go.Figure()
     x_title = "X (km)"
 

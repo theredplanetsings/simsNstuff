@@ -164,6 +164,10 @@ class CrossSectionFigureTests(unittest.TestCase):
 
         self.assertEqual(len(fig.data), 1)
 
+    def test_cross_section_rejects_invalid_axis_choice(self):
+        with self.assertRaisesRegex(ValueError, "axis_choice must be 'X-Z' or 'Y-Z'"):
+            _build_cross_section_figure({"A": [[1.0, 2.0, -3.0]]}, "Z-Y", "Test")
+
 class GroupedScatterTraceTests(unittest.TestCase):
     def test_grouped_scatter_traces_skip_empty_groups(self):
         fig = go.Figure()
