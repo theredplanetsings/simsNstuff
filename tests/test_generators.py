@@ -12,6 +12,15 @@ class StableSeedTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "label must not be empty"):
             derive_stable_seed(42, "   ")
 
+    def test_derive_stable_seed_accepts_integral_string_seed(self):
+        first = derive_stable_seed("42", "Gold")
+        second = derive_stable_seed(42, "Gold")
+        self.assertEqual(first, second)
+
+    def test_derive_stable_seed_rejects_non_integral_string_seed(self):
+        with self.assertRaisesRegex(ValueError, "seed must be a whole number"):
+            derive_stable_seed("42.5", "Gold")
+
 class GeneratorContractTests(unittest.TestCase):
     def test_mineral_generation_is_deterministic(self):
         first = generate_realistic_deposits("Gold", "Orebody systems", 120, 42, 1.0, 3)

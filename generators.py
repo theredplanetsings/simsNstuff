@@ -33,6 +33,15 @@ def _normalize_seed(base_seed):
     if isinstance(base_seed, (bool, np.bool_)):
         raise TypeError("seed must be an integer value, not a boolean.")
 
+    if isinstance(base_seed, str):
+        candidate = base_seed.strip()
+        if not candidate:
+            raise TypeError("seed must be an integer value.")
+        try:
+            base_seed = float(candidate)
+        except ValueError as exc:
+            raise TypeError("seed must be an integer value.") from exc
+
     if isinstance(base_seed, (int, np.integer)):
         return int(base_seed)
 
