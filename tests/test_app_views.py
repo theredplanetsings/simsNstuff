@@ -234,6 +234,10 @@ class MetadataJsonTests(unittest.TestCase):
         with self.assertRaisesRegex(TypeError, "parameters must be a dictionary"):
             build_metadata_json("Mineral Deposits", [("seed", 42)])
 
+    def test_build_metadata_json_rejects_non_serializable_parameters(self):
+        with self.assertRaisesRegex(ValueError, "parameters must be JSON serializable"):
+            build_metadata_json("Mineral Deposits", {"seed": set([42])})
+
 class UsgsRowsTests(unittest.TestCase):
     def test_build_usgs_latest_rows_uses_stable_order(self):
         rows = _build_usgs_latest_rows(limit=2)

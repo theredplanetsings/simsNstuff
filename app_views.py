@@ -306,7 +306,10 @@ def build_metadata_json(view_name, parameters):
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "parameters": parameters,
     }
-    return json.dumps(payload, indent=2, sort_keys=True)
+    try:
+        return json.dumps(payload, indent=2, sort_keys=True)
+    except TypeError as exc:
+        raise ValueError("parameters must be JSON serializable.") from exc
 
 @st.cache_data(show_spinner=False)
 def _get_cached_production_data():
