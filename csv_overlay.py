@@ -21,14 +21,14 @@ def downsample_grouped_points(groups, max_points, seed):
     if max_points <= 0:
         raise ValueError("max_points must be greater than 0.")
 
+    if not isinstance(seed, int) or isinstance(seed, bool):
+        raise TypeError("seed must be an integer.")
+
     _validate_groups_for_downsampling(groups)
 
     total_points = sum(len(points) for points in groups.values())
     if total_points <= max_points:
         return {label: list(points) for label, points in groups.items()}
-
-    if not isinstance(seed, int) or isinstance(seed, bool):
-        raise TypeError("seed must be an integer.")
 
     rng = np.random.default_rng(seed)
     sampled = {label: [] for label in groups}

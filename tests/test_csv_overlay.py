@@ -249,6 +249,14 @@ class TestCsvOverlay(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "max_points must be greater than 0"):
             downsample_grouped_points({"A": [(1.0, 2.0, 3.0)]}, max_points=0, seed=42)
 
+    def test_downsample_grouped_points_rejects_non_integer_seed(self):
+        with self.assertRaisesRegex(TypeError, "seed must be an integer"):
+            downsample_grouped_points({"A": [(1.0, 2.0, 3.0)]}, max_points=10, seed=1.5)
+
+    def test_downsample_grouped_points_rejects_boolean_seed(self):
+        with self.assertRaisesRegex(TypeError, "seed must be an integer"):
+            downsample_grouped_points({"A": [(1.0, 2.0, 3.0)]}, max_points=10, seed=True)
+
     def test_downsample_grouped_points_rejects_bad_point_shape(self):
         with self.assertRaisesRegex(ValueError, "invalid point shape"):
             downsample_grouped_points({"A": [(1.0, 2.0)]}, max_points=1, seed=42)
