@@ -71,6 +71,10 @@ class BuildPointsCsvTests(unittest.TestCase):
     def test_build_points_csv_rejects_blank_unit_label(self):
         with self.assertRaisesRegex(ValueError, "unit_label must not be empty"):
             build_points_csv({"Mine A": [(1, 2, 3)]}, "   ")
+
+    def test_build_points_csv_rejects_non_dict_points(self):
+        with self.assertRaisesRegex(TypeError, "points_by_label must be a dictionary"):
+            build_points_csv([("Mine A", [(1, 2, 3)])], "m")
 class FormatPointGroupSummaryTests(unittest.TestCase):
     def test_format_point_group_summary_handles_singular(self):
         summary = format_point_group_summary(total_points=1, group_count=1)
